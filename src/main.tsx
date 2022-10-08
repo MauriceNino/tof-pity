@@ -1,8 +1,30 @@
-import { Box, createStyles, MantineProvider } from "@mantine/core";
+import {
+  Box,
+  createStyles,
+  DefaultMantineColor,
+  MantineProvider,
+  Tuple,
+} from "@mantine/core";
 import React, { FC } from "react";
 import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
 import { PityCounter } from "./components/pity-counter";
-import { useIsCompact } from "./util";
+import { useIsCompact } from "./hooks";
+import { persistor, store } from "./redux/store";
+
+type ExtendedCustomColors =
+  | "gold-items"
+  | "purple-items"
+  | "blue-items"
+  | "green-items"
+  | DefaultMantineColor;
+
+declare module "@mantine/core" {
+  export interface MantineThemeColorsOverride {
+    colors: Record<ExtendedCustomColors, Tuple<string, 10>>;
+  }
+}
 
 const useStyles = createStyles((t, { compact }: { compact: boolean }) => ({
   background: {
@@ -21,7 +43,7 @@ const useStyles = createStyles((t, { compact }: { compact: boolean }) => ({
     width: compact ? "100%" : "90%",
     marginLeft: "auto",
     marginRight: "auto",
-    borderRadius: t.radius.lg,
+    borderRadius: compact ? 0 : t.radius.lg,
     boxShadow: t.shadows.lg,
     padding: 20,
     transition: `all .3s ${t.transitionTimingFunction}`,
@@ -41,22 +63,35 @@ export const App: FC = () => {
   );
 };
 
+const singularColor = (color: string) =>
+  new Array(10).fill(0).map((_) => color) as Tuple<string, 10>;
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colorScheme: "dark",
-        globalStyles: (theme) => ({
-          "html, body, #root": {
-            height: "100%",
-            width: "100%",
-          },
-        }),
-      }}
-    >
-      <App />
-    </MantineProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <MantineProvider
+          withGlobalStyles
+          withNormalizeCSS
+          theme={{
+            colorScheme: "dark",
+            colors: {
+              "gold-items": singularColor("#ffdb84"),
+              "purple-items": singularColor("#e1beff"),
+              "blue-items": singularColor("#b5dfff"),
+              "green-items": singularColor("#a2e4cb"),
+            },
+            globalStyles: (theme) => ({
+              "html, body, #root": {
+                height: "100%",
+                width: "100%",
+              },
+            }),
+          }}
+        >
+          <App />
+        </MantineProvider>
+      </PersistGate>
+    </Provider>
   </React.StrictMode>
 );
