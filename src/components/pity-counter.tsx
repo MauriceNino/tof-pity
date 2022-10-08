@@ -1,6 +1,7 @@
 import {
   ActionIcon,
   Button,
+  createStyles,
   Group,
   Menu,
   Select,
@@ -52,6 +53,21 @@ const getDropsChance = (
   return `${rate.toFixed(1)}%`;
 };
 
+const useStyles = createStyles((t, _, getRef) => ({
+  tableRow: {
+    [`&:hover .${getRef("opacity-change")}`]: {
+      opacity: 1,
+    },
+    [`.${getRef("opacity-change")}`]: {
+      opacity: 0.5,
+      transition: "all .1s ease-in-out",
+    },
+  },
+  opacityChange: {
+    ref: getRef("opacity-change"),
+  },
+}));
+
 export const PityCounter: FC = () => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectState);
@@ -60,6 +76,7 @@ export const PityCounter: FC = () => {
   const [chipEnabled, setChipEnabled] = useState(true);
 
   const { colors } = useMantineTheme();
+  const { classes } = useStyles();
 
   return (
     <Stack>
@@ -144,8 +161,9 @@ export const PityCounter: FC = () => {
                 const currentPity = counts?.currentPity ?? 0;
 
                 return (
-                  <tr key={type}>
+                  <tr key={type} className={classes.tableRow}>
                     <td
+                      className={classes.opacityChange}
                       style={{
                         color: [GearTypes.Gold, MatrixTypes.Gold].includes(type)
                           ? colors["gold-items"][0]
@@ -160,17 +178,25 @@ export const PityCounter: FC = () => {
                     >
                       {DROPS_NAMES[type]}
                     </td>
-                    <td>{getDropsChance(rates, 0, counts?.currentPity)}</td>
-                    <td>{getDropsChance(rates, 1, counts?.currentPity)}</td>
-                    <td>{getDropsChance(rates, 2, counts?.currentPity)}</td>
+                    <td className={classes.opacityChange}>
+                      {getDropsChance(rates, 0, counts?.currentPity)}
+                    </td>
+                    <td className={classes.opacityChange}>
+                      {getDropsChance(rates, 1, counts?.currentPity)}
+                    </td>
+                    <td className={classes.opacityChange}>
+                      {getDropsChance(rates, 2, counts?.currentPity)}
+                    </td>
                     <td>
                       {rates.specialFall ? (
-                        <Text>
+                        <>
                           <Text span weight="bold">
                             {currentPity}
                           </Text>{" "}
-                          / {rates.specialFall.end}
-                        </Text>
+                          <Text span className={classes.opacityChange}>
+                            / {rates.specialFall.end}
+                          </Text>
+                        </>
                       ) : (
                         currentPity
                       )}
