@@ -1,12 +1,12 @@
 import { Stack } from "@mantine/core";
 import { FC } from "react";
-import { ActionsMenu } from "./actions-menu";
+import { ActionsRow } from "./actions-row";
 import { OutputTable } from "./output-table";
 
 export const PityCounter: FC = () => {
   return (
     <Stack>
-      <ActionsMenu />
+      <ActionsRow />
       <OutputTable />
     </Stack>
   );
