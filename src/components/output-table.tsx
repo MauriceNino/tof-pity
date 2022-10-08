@@ -5,6 +5,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { AnimatePresence, motion } from "framer-motion";
 import { FC } from "react";
 import {
   DROPS_NAMES,
@@ -59,7 +60,6 @@ const getDropTableOrder = (
   const dropTable: JODrops[] = [];
 
   if (goldEnabled) dropTable.push(GearTypes.Gold, MatrixTypes.Gold);
-
   if (purpleEnabled) dropTable.push(GearTypes.Purple, MatrixTypes.Purple);
   if (blueEnabled) dropTable.push(GearTypes.Blue, MatrixTypes.Blue);
   if (greenEnabled) dropTable.push(GearTypes.Green, MatrixTypes.Green);
@@ -67,88 +67,81 @@ const getDropTableOrder = (
   return dropTable;
 };
 
-export const TableRows: FC<{ items: JODrops[] }> = ({ items }) => {
+export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectState);
-  const {
-    selectedStage,
-    goldEnabled,
-    purpleEnabled,
-    blueEnabled,
-    greenEnabled,
-  } = useAppSelector(selectSettings);
+  const { selectedStage } = useAppSelector(selectSettings);
 
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
 
-  return (
-    <>
-      {items
-        .filter((v) => !isNoChance(selectedStage, v))
-        .map((type) => {
-          const rates = JOINT_OPS_RATES[selectedStage][type];
-          const counts = state.joCounts[selectedStage]?.counts?.[type];
-          const currentPity = counts?.currentPity ?? 0;
+  const rates = JOINT_OPS_RATES[selectedStage][item];
+  const counts = state.joCounts[selectedStage]?.counts?.[item];
+  const currentPity = counts?.currentPity ?? 0;
 
-          return (
-            <tr key={type} className={classes.tableRow}>
-              <td
-                className={classes.opacityChange}
-                style={{
-                  color: [GearTypes.Gold, MatrixTypes.Gold].includes(type)
-                    ? colors["gold-items"][0]
-                    : [GearTypes.Purple, MatrixTypes.Purple].includes(type)
-                    ? colors["purple-items"][0]
-                    : [GearTypes.Blue, MatrixTypes.Blue].includes(type)
-                    ? colors["blue-items"][0]
-                    : colors["green-items"][0],
-                }}
-              >
-                {DROPS_NAMES[type]}
-              </td>
-              <td className={classes.opacityChange}>
-                {getDropsChance(rates, 0, counts?.currentPity)}
-              </td>
-              <td className={classes.opacityChange}>
-                {getDropsChance(rates, 1, counts?.currentPity)}
-              </td>
-              <td className={classes.opacityChange}>
-                {getDropsChance(rates, 2, counts?.currentPity)}
-              </td>
-              <td>
-                {rates.specialFall ? (
-                  <>
-                    <Text span weight="bold">
-                      {currentPity}
-                    </Text>
-                    <Text span className={classes.opacityChange}>
-                      {" "}
-                      / {rates.specialFall.end + 1}
-                    </Text>
-                  </>
-                ) : (
-                  currentPity
-                )}
-              </td>
-              <td>
-                <Button
-                  variant="light"
-                  onClick={() =>
-                    dispatch(
-                      stateActions.registerDrop({
-                        stage: selectedStage,
-                        type,
-                      })
-                    )
-                  }
-                >
-                  Drop
-                </Button>
-              </td>
-            </tr>
-          );
-        })}
-    </>
+  return (
+    <motion.tr
+      key={item}
+      layoutId={item}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className={classes.tableRow}
+    >
+      <td
+        className={classes.opacityChange}
+        style={{
+          color: [GearTypes.Gold, MatrixTypes.Gold].includes(item)
+            ? colors["gold-items"][0]
+            : [GearTypes.Purple, MatrixTypes.Purple].includes(item)
+            ? colors["purple-items"][0]
+            : [GearTypes.Blue, MatrixTypes.Blue].includes(item)
+            ? colors["blue-items"][0]
+            : colors["green-items"][0],
+        }}
+      >
+        {DROPS_NAMES[item]}
+      </td>
+      <td className={classes.opacityChange}>
+        {getDropsChance(rates, 0, counts?.currentPity)}
+      </td>
+      <td className={classes.opacityChange}>
+        {getDropsChance(rates, 1, counts?.currentPity)}
+      </td>
+      <td className={classes.opacityChange}>
+        {getDropsChance(rates, 2, counts?.currentPity)}
+      </td>
+      <td>
+        {rates.specialFall ? (
+          <>
+            <Text span weight="bold">
+              {currentPity}
+            </Text>
+            <Text span className={classes.opacityChange}>
+              {" "}
+              / {rates.specialFall.end + 1}
+            </Text>
+          </>
+        ) : (
+          currentPity
+        )}
+      </td>
+      <td>
+        <Button
+          variant="light"
+          onClick={() =>
+            dispatch(
+              stateActions.registerDrop({
+                stage: selectedStage,
+                type: item,
+              })
+            )
+          }
+        >
+          Drop
+        </Button>
+      </td>
+    </motion.tr>
   );
 };
 
@@ -160,32 +153,33 @@ export const OutputTable: FC = () => {
     blueEnabled,
     greenEnabled,
   } = useAppSelector(selectSettings);
+  const { classes } = useStyles();
 
   return (
     <Table>
       <thead>
         <tr>
-          <th></th>
-          <th>Chest #1</th>
-          <th>Chest #2</th>
-          <th>Chest #3</th>
-          <th>Current Pity</th>
-          <th></th>
+          <motion.th layout></motion.th>
+          <motion.th layout>Chest #1</motion.th>
+          <motion.th layout>Chest #2</motion.th>
+          <motion.th layout>Chest #3</motion.th>
+          <motion.th layout>Current Pity</motion.th>
+          <motion.th layout></motion.th>
         </tr>
       </thead>
       <tbody>
-        {goldEnabled && (
-          <TableRows items={[GearTypes.Gold, MatrixTypes.Gold]} />
-        )}
-        {purpleEnabled && (
-          <TableRows items={[GearTypes.Purple, MatrixTypes.Purple]} />
-        )}
-        {blueEnabled && (
-          <TableRows items={[GearTypes.Blue, MatrixTypes.Blue]} />
-        )}
-        {greenEnabled && (
-          <TableRows items={[GearTypes.Green, MatrixTypes.Green]} />
-        )}
+        <AnimatePresence>
+          {getDropTableOrder(
+            goldEnabled,
+            purpleEnabled,
+            blueEnabled,
+            greenEnabled
+          )
+            .filter((t) => !isNoChance(selectedStage, t))
+            .map((t) => (
+              <TableRow key={t} item={t} />
+            ))}
+        </AnimatePresence>
       </tbody>
     </Table>
   );
