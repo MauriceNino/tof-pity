@@ -1,12 +1,25 @@
-import { Box, List, Modal, Stack, Text } from "@mantine/core";
+import { Box, List, Modal, Stack, Text, useMantineTheme } from "@mantine/core";
 import { FC } from "react";
 
 export const HelpPopup: FC<{ opened: boolean; close: () => void }> = ({
   opened,
   close,
 }) => {
+  const { colors } = useMantineTheme();
+
   return (
-    <Modal size="lg" opened={opened} onClose={close} title="Help">
+    <Modal
+      size="lg"
+      radius="lg"
+      styles={{
+        modal: {
+          backgroundColor: colors.dark[5],
+        },
+      }}
+      opened={opened}
+      onClose={close}
+      title="Help"
+    >
       <Stack>
         <Box>
           <Text weight="bold">What is this project for?</Text>

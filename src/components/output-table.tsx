@@ -67,7 +67,7 @@ const getDropTableOrder = (
   return dropTable;
 };
 
-export const OutputTable: FC = () => {
+export const TableRows: FC<{ items: JODrops[] }> = ({ items }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectState);
   const {
@@ -82,6 +82,86 @@ export const OutputTable: FC = () => {
   const { classes } = useStyles();
 
   return (
+    <>
+      {items
+        .filter((v) => !isNoChance(selectedStage, v))
+        .map((type) => {
+          const rates = JOINT_OPS_RATES[selectedStage][type];
+          const counts = state.joCounts[selectedStage]?.counts?.[type];
+          const currentPity = counts?.currentPity ?? 0;
+
+          return (
+            <tr key={type} className={classes.tableRow}>
+              <td
+                className={classes.opacityChange}
+                style={{
+                  color: [GearTypes.Gold, MatrixTypes.Gold].includes(type)
+                    ? colors["gold-items"][0]
+                    : [GearTypes.Purple, MatrixTypes.Purple].includes(type)
+                    ? colors["purple-items"][0]
+                    : [GearTypes.Blue, MatrixTypes.Blue].includes(type)
+                    ? colors["blue-items"][0]
+                    : colors["green-items"][0],
+                }}
+              >
+                {DROPS_NAMES[type]}
+              </td>
+              <td className={classes.opacityChange}>
+                {getDropsChance(rates, 0, counts?.currentPity)}
+              </td>
+              <td className={classes.opacityChange}>
+                {getDropsChance(rates, 1, counts?.currentPity)}
+              </td>
+              <td className={classes.opacityChange}>
+                {getDropsChance(rates, 2, counts?.currentPity)}
+              </td>
+              <td>
+                {rates.specialFall ? (
+                  <>
+                    <Text span weight="bold">
+                      {currentPity}
+                    </Text>
+                    <Text span className={classes.opacityChange}>
+                      {" "}
+                      / {rates.specialFall.end + 1}
+                    </Text>
+                  </>
+                ) : (
+                  currentPity
+                )}
+              </td>
+              <td>
+                <Button
+                  variant="light"
+                  onClick={() =>
+                    dispatch(
+                      stateActions.registerDrop({
+                        stage: selectedStage,
+                        type,
+                      })
+                    )
+                  }
+                >
+                  Drop
+                </Button>
+              </td>
+            </tr>
+          );
+        })}
+    </>
+  );
+};
+
+export const OutputTable: FC = () => {
+  const {
+    selectedStage,
+    goldEnabled,
+    purpleEnabled,
+    blueEnabled,
+    greenEnabled,
+  } = useAppSelector(selectSettings);
+
+  return (
     <Table>
       <thead>
         <tr>
@@ -94,76 +174,18 @@ export const OutputTable: FC = () => {
         </tr>
       </thead>
       <tbody>
-        {getDropTableOrder(
-          goldEnabled,
-          purpleEnabled,
-          blueEnabled,
-          greenEnabled
-        )
-          .filter((v) => !isNoChance(selectedStage, v))
-          .map((type) => {
-            const rates = JOINT_OPS_RATES[selectedStage][type];
-            const counts = state.joCounts[selectedStage]?.counts?.[type];
-            const currentPity = counts?.currentPity ?? 0;
-
-            return (
-              <tr key={type} className={classes.tableRow}>
-                <td
-                  className={classes.opacityChange}
-                  style={{
-                    color: [GearTypes.Gold, MatrixTypes.Gold].includes(type)
-                      ? colors["gold-items"][0]
-                      : [GearTypes.Purple, MatrixTypes.Purple].includes(type)
-                      ? colors["purple-items"][0]
-                      : [GearTypes.Blue, MatrixTypes.Blue].includes(type)
-                      ? colors["blue-items"][0]
-                      : colors["green-items"][0],
-                  }}
-                >
-                  {DROPS_NAMES[type]}
-                </td>
-                <td className={classes.opacityChange}>
-                  {getDropsChance(rates, 0, counts?.currentPity)}
-                </td>
-                <td className={classes.opacityChange}>
-                  {getDropsChance(rates, 1, counts?.currentPity)}
-                </td>
-                <td className={classes.opacityChange}>
-                  {getDropsChance(rates, 2, counts?.currentPity)}
-                </td>
-                <td>
-                  {rates.specialFall ? (
-                    <>
-                      <Text span weight="bold">
-                        {currentPity}
-                      </Text>
-                      <Text span className={classes.opacityChange}>
-                        {" "}
-                        / {rates.specialFall.end + 1}
-                      </Text>
-                    </>
-                  ) : (
-                    currentPity
-                  )}
-                </td>
-                <td>
-                  <Button
-                    variant="light"
-                    onClick={() =>
-                      dispatch(
-                        stateActions.registerDrop({
-                          stage: selectedStage,
-                          type,
-                        })
-                      )
-                    }
-                  >
-                    Drop
-                  </Button>
-                </td>
-              </tr>
-            );
-          })}
+        {goldEnabled && (
+          <TableRows items={[GearTypes.Gold, MatrixTypes.Gold]} />
+        )}
+        {purpleEnabled && (
+          <TableRows items={[GearTypes.Purple, MatrixTypes.Purple]} />
+        )}
+        {blueEnabled && (
+          <TableRows items={[GearTypes.Blue, MatrixTypes.Blue]} />
+        )}
+        {greenEnabled && (
+          <TableRows items={[GearTypes.Green, MatrixTypes.Green]} />
+        )}
       </tbody>
     </Table>
   );

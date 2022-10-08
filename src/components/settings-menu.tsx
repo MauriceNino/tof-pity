@@ -40,7 +40,7 @@ export const SettingsMenu: FC = () => {
       <HelpPopup opened={helpOpened} close={() => setHelpOpened(false)} />
       <Menu shadow="md" position="bottom-end">
         <Menu.Target>
-          <ActionIcon size="lg" variant="outline">
+          <ActionIcon size="lg">
             <IconSettings size={26} />
           </ActionIcon>
         </Menu.Target>
@@ -54,9 +54,7 @@ export const SettingsMenu: FC = () => {
               <Text>Gold</Text>
               <Switch
                 checked={goldEnabled}
-                onClick={(e) =>
-                  changeSetting("goldEnabled", e.currentTarget.checked)
-                }
+                onChange={(e) => changeSetting("goldEnabled", goldEnabled)}
               />
             </Group>
           </Menu.Item>
@@ -68,9 +66,7 @@ export const SettingsMenu: FC = () => {
               <Text>Purple</Text>
               <Switch
                 checked={purpleEnabled}
-                onClick={(e) =>
-                  changeSetting("purpleEnabled", e.currentTarget.checked)
-                }
+                onChange={(e) => changeSetting("purpleEnabled", purpleEnabled)}
               />
             </Group>
           </Menu.Item>
@@ -82,9 +78,7 @@ export const SettingsMenu: FC = () => {
               <Text>Blue</Text>
               <Switch
                 checked={blueEnabled}
-                onClick={(e) =>
-                  changeSetting("blueEnabled", e.currentTarget.checked)
-                }
+                onChange={(e) => changeSetting("blueEnabled", blueEnabled)}
               />
             </Group>
           </Menu.Item>
@@ -96,9 +90,7 @@ export const SettingsMenu: FC = () => {
               <Text>Green</Text>
               <Switch
                 checked={greenEnabled}
-                onClick={(e) =>
-                  changeSetting("greenEnabled", e.currentTarget.checked)
-                }
+                onChange={(e) => changeSetting("greenEnabled", greenEnabled)}
               />
             </Group>
           </Menu.Item>
