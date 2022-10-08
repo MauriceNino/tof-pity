@@ -11,10 +11,12 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { settingsReducer } from "./settingsSlice";
 import { stateReducer } from "./stateSlice";
 
 const reducers = combineReducers({
   state: stateReducer,
+  settings: settingsReducer,
 });
 
 const persistConfig = {
