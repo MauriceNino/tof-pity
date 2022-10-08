@@ -11,7 +11,7 @@ import {
   settingsActions,
   SettingsState,
 } from "../redux/settingsSlice";
-import { stateActions } from "../redux/stateSlice";
+import { selectState, stateActions } from "../redux/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { HelpPopup } from "./help-popup";
 
@@ -19,6 +19,7 @@ export const SettingsMenu: FC = () => {
   const dispatch = useAppDispatch();
   const { goldEnabled, purpleEnabled, blueEnabled, greenEnabled } =
     useAppSelector(selectSettings);
+  const { changeHistory } = useAppSelector(selectState);
 
   const changeSetting = <T extends keyof SettingsState>(
     key: T,
@@ -32,6 +33,7 @@ export const SettingsMenu: FC = () => {
       <ActionIcon
         size="lg"
         variant="transparent"
+        disabled={changeHistory.length === 0}
         onClick={() => dispatch(stateActions.goBackHistory())}
       >
         <IconArrowBackUp size={26} />
@@ -54,7 +56,7 @@ export const SettingsMenu: FC = () => {
               <Text>Gold</Text>
               <Switch
                 checked={goldEnabled}
-                onChange={(e) => changeSetting("goldEnabled", goldEnabled)}
+                onChange={() => changeSetting("goldEnabled", goldEnabled)}
               />
             </Group>
           </Menu.Item>
@@ -66,7 +68,7 @@ export const SettingsMenu: FC = () => {
               <Text>Purple</Text>
               <Switch
                 checked={purpleEnabled}
-                onChange={(e) => changeSetting("purpleEnabled", purpleEnabled)}
+                onChange={() => changeSetting("purpleEnabled", purpleEnabled)}
               />
             </Group>
           </Menu.Item>
@@ -78,7 +80,7 @@ export const SettingsMenu: FC = () => {
               <Text>Blue</Text>
               <Switch
                 checked={blueEnabled}
-                onChange={(e) => changeSetting("blueEnabled", blueEnabled)}
+                onChange={() => changeSetting("blueEnabled", blueEnabled)}
               />
             </Group>
           </Menu.Item>
@@ -90,7 +92,7 @@ export const SettingsMenu: FC = () => {
               <Text>Green</Text>
               <Switch
                 checked={greenEnabled}
-                onChange={(e) => changeSetting("greenEnabled", greenEnabled)}
+                onChange={() => changeSetting("greenEnabled", greenEnabled)}
               />
             </Group>
           </Menu.Item>
