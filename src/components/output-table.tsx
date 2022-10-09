@@ -5,13 +5,14 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
 import { FC } from "react";
 import {
   DROPS_NAMES,
   isNoChance,
   JOINT_OPS_RATES,
 } from "../constants/joint-ops";
+import { useWindowSize } from "../hooks";
 import { selectSettings } from "../redux/settingsSlice";
 import { selectState, stateActions } from "../redux/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
@@ -21,6 +22,8 @@ import {
   MatrixTypes,
   PerChestRates,
 } from "../types/joint-ops";
+
+const CHEST_SHOW_BREAKPOINT = 565;
 
 const getDropsChance = (
   rates: PerChestRates,
@@ -70,8 +73,10 @@ const getDropTableOrder = (
 export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectState);
-  const { selectedStage } = useAppSelector(selectSettings);
+  const { selectedStage, compactLayout } = useAppSelector(selectSettings);
 
+  const { width } = useWindowSize();
+  const isCompactTable = width < CHEST_SHOW_BREAKPOINT && compactLayout;
   const { colors } = useMantineTheme();
   const { classes } = useStyles();
 
@@ -102,15 +107,19 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
       >
         {DROPS_NAMES[item]}
       </td>
-      <td className={classes.opacityChange}>
-        {getDropsChance(rates, 0, counts?.currentPity)}
-      </td>
-      <td className={classes.opacityChange}>
-        {getDropsChance(rates, 1, counts?.currentPity)}
-      </td>
-      <td className={classes.opacityChange}>
-        {getDropsChance(rates, 2, counts?.currentPity)}
-      </td>
+      {!isCompactTable && (
+        <>
+          <td className={classes.opacityChange}>
+            {getDropsChance(rates, 0, counts?.currentPity)}
+          </td>
+          <td className={classes.opacityChange}>
+            {getDropsChance(rates, 1, counts?.currentPity)}
+          </td>
+          <td className={classes.opacityChange}>
+            {getDropsChance(rates, 2, counts?.currentPity)}
+          </td>
+        </>
+      )}
       <td>
         {rates.specialFall ? (
           <>
@@ -145,6 +154,15 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   );
 };
 
+const TABLE_HEADINGS = [
+  "",
+  "Chest #1",
+  "Chest #2",
+  "Chest #3",
+  "Current Pity",
+  "",
+];
+
 export const OutputTable: FC = () => {
   const {
     selectedStage,
@@ -152,35 +170,44 @@ export const OutputTable: FC = () => {
     purpleEnabled,
     blueEnabled,
     greenEnabled,
+    compactLayout,
   } = useAppSelector(selectSettings);
-  const { classes } = useStyles();
+  const { width } = useWindowSize();
+  const isCompactTable = width < CHEST_SHOW_BREAKPOINT && compactLayout;
+
+  const headings = TABLE_HEADINGS.map((h, i) => [h, i] as const).filter(
+    ([_, i]) => !isCompactTable || [0, 4, 5].includes(i)
+  );
 
   return (
     <Table>
-      <thead>
-        <tr>
-          <motion.th layout></motion.th>
-          <motion.th layout>Chest #1</motion.th>
-          <motion.th layout>Chest #2</motion.th>
-          <motion.th layout>Chest #3</motion.th>
-          <motion.th layout>Current Pity</motion.th>
-          <motion.th layout></motion.th>
-        </tr>
-      </thead>
-      <tbody>
-        <AnimatePresence>
-          {getDropTableOrder(
-            goldEnabled,
-            purpleEnabled,
-            blueEnabled,
-            greenEnabled
-          )
-            .filter((t) => !isNoChance(selectedStage, t))
-            .map((t) => (
-              <TableRow key={t} item={t} />
-            ))}
-        </AnimatePresence>
-      </tbody>
+      <LayoutGroup>
+        <thead>
+          <tr>
+            <AnimatePresence>
+              {headings.map(([h, i]) => (
+                <motion.th key={i} layout>
+                  {h}
+                </motion.th>
+              ))}
+            </AnimatePresence>
+          </tr>
+        </thead>
+        <tbody>
+          <AnimatePresence>
+            {getDropTableOrder(
+              goldEnabled,
+              purpleEnabled,
+              blueEnabled,
+              greenEnabled
+            )
+              .filter((t) => !isNoChance(selectedStage, t))
+              .map((t) => (
+                <TableRow key={t} item={t} />
+              ))}
+          </AnimatePresence>
+        </tbody>
+      </LayoutGroup>
     </Table>
   );
 };

@@ -113,15 +113,15 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
   },
 };
 
-export const JOINT_OPS_NAMES: Record<JOStages, string> = {
-  [JOStages.I]: "Joint Operation I (Lv. 20)",
-  [JOStages.II]: "Joint Operation II (Lv. 25)",
-  [JOStages.III]: "Joint Operation III (Lv. 31)",
-  [JOStages.IV]: "Joint Operation IV (Lv. 37)",
-  [JOStages.V]: "Joint Operation V (Lv. 43)",
-  [JOStages.VI]: "Joint Operation VI (Lv. 50)",
-  [JOStages.VII]: "Joint Operation VII (Lv. 60)",
-  [JOStages.VIII]: "Joint Operation VIII (Lv. 70)",
+export const JOINT_OPS_NAMES: Record<JOStages, [string, string]> = {
+  [JOStages.I]: ["Joint Operation I (Lv. 20)", "I"],
+  [JOStages.II]: ["Joint Operation II (Lv. 25)", "II"],
+  [JOStages.III]: ["Joint Operation III (Lv. 31)", "III"],
+  [JOStages.IV]: ["Joint Operation IV (Lv. 37)", "IV"],
+  [JOStages.V]: ["Joint Operation V (Lv. 43)", "V"],
+  [JOStages.VI]: ["Joint Operation VI (Lv. 50)", "VI"],
+  [JOStages.VII]: ["Joint Operation VII (Lv. 60)", "VII"],
+  [JOStages.VIII]: ["Joint Operation VIII (Lv. 70)", "VIII"],
 };
 
 export const DROPS_NAMES: Record<JODrops, string> = {

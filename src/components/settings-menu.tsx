@@ -17,8 +17,13 @@ import { HelpPopup } from "./help-popup";
 
 export const SettingsMenu: FC = () => {
   const dispatch = useAppDispatch();
-  const { goldEnabled, purpleEnabled, blueEnabled, greenEnabled } =
-    useAppSelector(selectSettings);
+  const {
+    goldEnabled,
+    purpleEnabled,
+    blueEnabled,
+    greenEnabled,
+    compactLayout,
+  } = useAppSelector(selectSettings);
   const { changeHistory } = useAppSelector(selectState);
 
   const changeSetting = <T extends keyof SettingsState>(
@@ -47,6 +52,20 @@ export const SettingsMenu: FC = () => {
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>
+          <Menu.Label>Features</Menu.Label>
+          <Menu.Item
+            closeMenuOnClick={false}
+            onClick={() => changeSetting("compactLayout", !compactLayout)}
+          >
+            <Group position="apart">
+              <Text>Compact Layout</Text>
+              <Switch
+                checked={compactLayout}
+                onChange={() => changeSetting("compactLayout", compactLayout)}
+              />
+            </Group>
+          </Menu.Item>
+
           <Menu.Label>Enabled Items</Menu.Label>
           <Menu.Item
             closeMenuOnClick={false}

@@ -9,6 +9,7 @@ export type SettingsState = {
   purpleEnabled: boolean;
   blueEnabled: boolean;
   greenEnabled: boolean;
+  compactLayout: boolean;
 };
 
 const initialState: SettingsState = {
@@ -18,6 +19,7 @@ const initialState: SettingsState = {
   purpleEnabled: true,
   blueEnabled: true,
   greenEnabled: true,
+  compactLayout: true,
 };
 
 export const settingsSlice = createSlice({
