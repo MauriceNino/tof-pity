@@ -143,8 +143,8 @@ export const SUPPLY_CHIP_BEHAVIOR: Record<
   [GearTypes.Green]: { withChip: 1, withoutChip: 0.5 },
   [GearTypes.Purple]: { withChip: 1, withoutChip: 0.5 },
   [GearTypes.Gold]: { withChip: 1, withoutChip: 0.5 },
-  [MatrixTypes.Blue]: { withChip: 1, withoutChip: 0.5 },
-  [MatrixTypes.Green]: { withChip: 1, withoutChip: 0.5 },
-  [MatrixTypes.Purple]: { withChip: 1, withoutChip: 0.5 },
+  [MatrixTypes.Blue]: { withChip: 0.5, withoutChip: 0.5 },
+  [MatrixTypes.Green]: { withChip: 0.5, withoutChip: 0.5 },
+  [MatrixTypes.Purple]: { withChip: 0.5, withoutChip: 0.5 },
   [MatrixTypes.Gold]: { withChip: 0.5, withoutChip: 0.5 },
 };
