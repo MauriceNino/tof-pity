@@ -71,6 +71,22 @@ export const HelpPopup: FC<{ opened: boolean; close: () => void }> = ({
             .
           </Text>
         </Box>
+
+        <Box>
+          <Text weight="bold">
+            Why does the pity for matrix only go up 0.5 per chest?
+          </Text>
+          <Text size="sm">
+            The current data suggests, that every chest gives 0.5 pity for every
+            possible drop. Joint Ops chips double that pity increase for all
+            armor type items, which is why they are increased by 1 on each
+            chest, if enabled. Unfortunately matrix pity is not affected by
+            JO-Chips, which is why they only go up 0.5, no matter what.
+            <br />
+            This also means, that the actual pity for SSR matrix is at 68
+            chests, not 34!
+          </Text>
+        </Box>
       </Stack>
     </Modal>
   );
