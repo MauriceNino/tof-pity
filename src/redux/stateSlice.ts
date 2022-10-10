@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import moment from "moment";
 import { SUPPLY_CHIP_BEHAVIOR } from "../constants/joint-ops";
 import {
   GearTypes,
@@ -18,12 +19,14 @@ type HistoryChestOpen = {
   type: HistoryChangeType.CHEST_OPEN;
   stage: JOStages;
   withChip: boolean;
+  ts: number;
 };
 type HistoryItemDrop = {
   type: HistoryChangeType.ITEM_DROP;
   stage: JOStages;
   item: GearTypes | MatrixTypes;
   pity: number;
+  ts: number;
 };
 
 type History = HistoryChestOpen | HistoryItemDrop;
@@ -125,6 +128,7 @@ export const stateSlice = createSlice({
         type: HistoryChangeType.CHEST_OPEN,
         stage: action.payload.stage,
         withChip: action.payload.chipEnabled,
+        ts: moment().valueOf(),
       });
     },
     registerDrop: (
@@ -138,6 +142,7 @@ export const stateSlice = createSlice({
           stage: action.payload.stage,
           item: action.payload.type,
           pity: stage.counts[action.payload.type].currentPity,
+          ts: moment().valueOf(),
         });
 
         stage.counts[action.payload.type].currentPity = 0;
