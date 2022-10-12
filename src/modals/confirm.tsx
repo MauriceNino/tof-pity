@@ -5,7 +5,12 @@ export const ConfirmModal: FC<{
   opened: boolean;
   close: () => void;
   onConfirm: () => void;
-}> = ({ opened, close, onConfirm }) => {
+  title: string;
+  text: string;
+  yesText: string;
+  noText: string;
+  danger?: boolean;
+}> = ({ opened, close, onConfirm, title, text, yesText, noText, danger }) => {
   const { colors } = useMantineTheme();
 
   return (
@@ -19,25 +24,23 @@ export const ConfirmModal: FC<{
       }}
       opened={opened}
       onClose={close}
-      title="Are you sure?"
+      title={title}
     >
       <Stack>
-        <Text weight="bold">
-          This operation can not be reversed and all history will be deleted
-        </Text>
+        <Text weight="bold">{text}</Text>
 
         <Stack spacing="xs">
           <Button
-            color="red.5"
+            color={danger ? "red.5" : undefined}
             onClick={() => {
               onConfirm();
               close();
             }}
           >
-            Yes, clear my history
+            {yesText}
           </Button>
           <Button variant="subtle" onClick={() => close()}>
-            Cancel
+            {noText}
           </Button>
         </Stack>
       </Stack>

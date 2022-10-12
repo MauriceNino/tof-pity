@@ -171,6 +171,11 @@ export const HistoryModal: FC<{ opened: boolean; close: () => void }> = ({
         opened={confirmOpened}
         close={() => setConfirmOpened(false)}
         onConfirm={() => dispatch(stateActions.clearHistory())}
+        title="Are you sure?"
+        text="This operation can not be reversed and all history will be deleted"
+        yesText="Yes, clear my history"
+        noText="Cancel"
+        danger
       />
     </>
   );

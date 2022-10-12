@@ -170,6 +170,9 @@ export const stateSlice = createSlice({
     clearHistory: (state) => {
       state.changeHistory = [];
     },
+    removeSpecificHistory: (state, action: PayloadAction<number>) => {
+      state.changeHistory.splice(action.payload, 1);
+    },
   },
 });
 
