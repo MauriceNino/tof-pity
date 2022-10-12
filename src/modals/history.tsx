@@ -18,8 +18,8 @@ import { FC, useEffect, useState } from "react";
 import { selectState, stateActions } from "../redux/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { ConfirmModal } from "./confirm";
+import { HistoryStatistics } from "./history-statistics";
 import { HistoryTimeline } from "./history-timeline";
-import { HistoryVisualization } from "./history-visualization";
 
 const downloadJSON = (filename: string, content: string) => {
   var element = document.createElement("a");
@@ -147,11 +147,11 @@ export const HistoryModal: FC<{ opened: boolean; close: () => void }> = ({
             </Tooltip>
           </Group>
 
-          <Accordion defaultValue="visualization">
-            <Accordion.Item value="visualization">
-              <Accordion.Control>Visualization</Accordion.Control>
+          <Accordion defaultValue="statistics">
+            <Accordion.Item value="statistics">
+              <Accordion.Control>Statistics</Accordion.Control>
               <Accordion.Panel>
-                <HistoryVisualization />
+                <HistoryStatistics />
               </Accordion.Panel>
             </Accordion.Item>
 

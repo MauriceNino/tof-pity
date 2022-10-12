@@ -27,7 +27,7 @@ const isNoDrop = (
     (h) => historyIsItemDrop(h) && h.stage === stage && h.item === item
   );
 
-export const HistoryVisualization: FC = () => {
+export const HistoryStatistics: FC = () => {
   const { colors } = useMantineTheme();
   const state = useAppSelector(selectState);
   const dropTableOrder = useDropTableOrder();
@@ -108,7 +108,7 @@ export const HistoryVisualization: FC = () => {
                     }
 
                     const averageDrops = weightedOpened * (average / 100);
-                    const diff = (drops / averageDrops) * 100;
+                    const diff = (drops / averageDrops) * 100 - 100;
 
                     return (
                       <tr key={drop}>
