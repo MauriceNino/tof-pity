@@ -12,16 +12,12 @@ import {
   isNoChance,
   JOINT_OPS_RATES,
 } from "../constants/joint-ops";
-import { useWindowSize } from "../hooks";
+import { useDropTableOrder, useWindowSize } from "../hooks";
 import { selectSettings } from "../redux/settingsSlice";
 import { selectState, stateActions } from "../redux/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import {
-  GearTypes,
-  JODrops,
-  MatrixTypes,
-  PerChestRates,
-} from "../types/joint-ops";
+import { JODrops, PerChestRates } from "../types/joint-ops";
+import { itemToColor } from "../util/util";
 
 const CHEST_SHOW_BREAKPOINT = 565;
 
@@ -54,22 +50,6 @@ const useStyles = createStyles((t, _, getRef) => ({
   },
 }));
 
-const getDropTableOrder = (
-  goldEnabled: boolean,
-  purpleEnabled: boolean,
-  blueEnabled: boolean,
-  greenEnabled: boolean
-) => {
-  const dropTable: JODrops[] = [];
-
-  if (goldEnabled) dropTable.push(GearTypes.Gold, MatrixTypes.Gold);
-  if (purpleEnabled) dropTable.push(GearTypes.Purple, MatrixTypes.Purple);
-  if (blueEnabled) dropTable.push(GearTypes.Blue, MatrixTypes.Blue);
-  if (greenEnabled) dropTable.push(GearTypes.Green, MatrixTypes.Green);
-
-  return dropTable;
-};
-
 export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   const dispatch = useAppDispatch();
   const state = useAppSelector(selectState);
@@ -96,13 +76,7 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
       <td
         className={classes.opacityChange}
         style={{
-          color: [GearTypes.Gold, MatrixTypes.Gold].includes(item)
-            ? colors["gold-items"][0]
-            : [GearTypes.Purple, MatrixTypes.Purple].includes(item)
-            ? colors["purple-items"][0]
-            : [GearTypes.Blue, MatrixTypes.Blue].includes(item)
-            ? colors["blue-items"][0]
-            : colors["green-items"][0],
+          color: itemToColor(colors, item),
         }}
       >
         {DROPS_NAMES[item]}
@@ -146,6 +120,10 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
               })
             )
           }
+          disabled={currentPity === 0}
+          sx={{
+            "&[data-disabled]": { color: colors.gray[6] },
+          }}
         >
           Drop
         </Button>
@@ -164,14 +142,8 @@ const TABLE_HEADINGS = [
 ];
 
 export const OutputTable: FC = () => {
-  const {
-    selectedStage,
-    goldEnabled,
-    purpleEnabled,
-    blueEnabled,
-    greenEnabled,
-    compactLayout,
-  } = useAppSelector(selectSettings);
+  const { selectedStage, compactLayout } = useAppSelector(selectSettings);
+  const dropTableOrder = useDropTableOrder();
   const { width } = useWindowSize();
   const isCompactTable = width < CHEST_SHOW_BREAKPOINT && compactLayout;
 
@@ -195,12 +167,7 @@ export const OutputTable: FC = () => {
         </thead>
         <tbody>
           <AnimatePresence>
-            {getDropTableOrder(
-              goldEnabled,
-              purpleEnabled,
-              blueEnabled,
-              greenEnabled
-            )
+            {dropTableOrder
               .filter((t) => !isNoChance(selectedStage, t))
               .map((t) => (
                 <TableRow key={t} item={t} />

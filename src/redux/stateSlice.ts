@@ -31,7 +31,7 @@ type HistoryItemDrop = {
 
 type History = HistoryChestOpen | HistoryItemDrop;
 
-type State = {
+export type State = {
   joCounts: Partial<
     Record<
       JOStages,
@@ -43,11 +43,13 @@ type State = {
   changeHistory: History[];
 };
 
-const historyIsChestOpen = (history: History): history is HistoryChestOpen =>
-  history.type === HistoryChangeType.CHEST_OPEN;
+export const historyIsChestOpen = (
+  history: History
+): history is HistoryChestOpen => history.type === HistoryChangeType.CHEST_OPEN;
 
-const historyIsItemDrop = (history: History): history is HistoryItemDrop =>
-  history.type === HistoryChangeType.ITEM_DROP;
+export const historyIsItemDrop = (
+  history: History
+): history is HistoryItemDrop => history.type === HistoryChangeType.ITEM_DROP;
 
 const initialState: State = {
   joCounts: {},
@@ -160,6 +162,13 @@ export const stateSlice = createSlice({
           stage.counts[lastHistory.item].currentPity = lastHistory.pity;
         }
       }
+    },
+    overrideState: (state, action: PayloadAction<State>) => {
+      state.changeHistory = action.payload.changeHistory;
+      state.joCounts = action.payload.joCounts;
+    },
+    clearHistory: (state) => {
+      state.changeHistory = [];
     },
   },
 });

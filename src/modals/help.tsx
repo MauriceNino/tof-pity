@@ -1,7 +1,7 @@
 import { Box, List, Modal, Stack, Text, useMantineTheme } from "@mantine/core";
 import { FC } from "react";
 
-export const HelpPopup: FC<{ opened: boolean; close: () => void }> = ({
+export const HelpModal: FC<{ opened: boolean; close: () => void }> = ({
   opened,
   close,
 }) => {

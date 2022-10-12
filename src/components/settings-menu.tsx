@@ -1,11 +1,16 @@
-import { ActionIcon, Group, Menu, Switch, Text } from "@mantine/core";
+import { ActionIcon, Group, Menu } from "@mantine/core";
 import {
   IconArrowBackUp,
   IconBrandGithub,
-  IconQuestionMark,
+  IconHelp,
+  IconServer,
   IconSettings,
+  IconTool,
 } from "@tabler/icons";
 import { FC, useState } from "react";
+import { HelpModal } from "../modals/help";
+import { HistoryModal } from "../modals/history";
+import { SettingsModal } from "../modals/settings";
 import {
   selectSettings,
   settingsActions,
@@ -13,7 +18,6 @@ import {
 } from "../redux/settingsSlice";
 import { selectState, stateActions } from "../redux/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { HelpPopup } from "./help-popup";
 
 export const SettingsMenu: FC = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +36,8 @@ export const SettingsMenu: FC = () => {
   ) => dispatch(settingsActions.changeSetting({ [key]: value }));
 
   const [helpOpened, setHelpOpened] = useState(false);
+  const [settingsOpened, setSettingsOpened] = useState(false);
+  const [historyOpened, setHistoryOpened] = useState(false);
 
   return (
     <Group sx={{ flexWrap: "nowrap", alignSelf: "flex-start" }}>
@@ -44,81 +50,37 @@ export const SettingsMenu: FC = () => {
         <IconArrowBackUp size={26} />
       </ActionIcon>
 
-      <HelpPopup opened={helpOpened} close={() => setHelpOpened(false)} />
-      <Menu shadow="md" position="bottom-end">
+      <HelpModal opened={helpOpened} close={() => setHelpOpened(false)} />
+      <SettingsModal
+        opened={settingsOpened}
+        close={() => setSettingsOpened(false)}
+      />
+      <HistoryModal
+        opened={historyOpened}
+        close={() => setHistoryOpened(false)}
+      />
+
+      <Menu shadow="md" radius="md" position="bottom-end">
         <Menu.Target>
           <ActionIcon size="lg">
             <IconSettings size={26} />
           </ActionIcon>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Label>Features</Menu.Label>
           <Menu.Item
-            closeMenuOnClick={false}
-            onClick={() => changeSetting("compactLayout", !compactLayout)}
+            icon={<IconTool size={14} />}
+            onClick={() => setSettingsOpened(true)}
           >
-            <Group position="apart">
-              <Text>Compact Layout</Text>
-              <Switch
-                checked={compactLayout}
-                onChange={() => changeSetting("compactLayout", compactLayout)}
-              />
-            </Group>
-          </Menu.Item>
-
-          <Menu.Label>Enabled Items</Menu.Label>
-          <Menu.Item
-            closeMenuOnClick={false}
-            onClick={() => changeSetting("goldEnabled", !goldEnabled)}
-          >
-            <Group position="apart">
-              <Text>Gold</Text>
-              <Switch
-                checked={goldEnabled}
-                onChange={() => changeSetting("goldEnabled", goldEnabled)}
-              />
-            </Group>
+            Settings
           </Menu.Item>
           <Menu.Item
-            closeMenuOnClick={false}
-            onClick={() => changeSetting("purpleEnabled", !purpleEnabled)}
+            icon={<IconServer size={14} />}
+            onClick={() => setHistoryOpened(true)}
           >
-            <Group position="apart">
-              <Text>Purple</Text>
-              <Switch
-                checked={purpleEnabled}
-                onChange={() => changeSetting("purpleEnabled", purpleEnabled)}
-              />
-            </Group>
+            History
           </Menu.Item>
           <Menu.Item
-            closeMenuOnClick={false}
-            onClick={() => changeSetting("blueEnabled", !blueEnabled)}
-          >
-            <Group position="apart">
-              <Text>Blue</Text>
-              <Switch
-                checked={blueEnabled}
-                onChange={() => changeSetting("blueEnabled", blueEnabled)}
-              />
-            </Group>
-          </Menu.Item>
-          <Menu.Item
-            closeMenuOnClick={false}
-            onClick={() => changeSetting("greenEnabled", !greenEnabled)}
-          >
-            <Group position="apart">
-              <Text>Green</Text>
-              <Switch
-                checked={greenEnabled}
-                onChange={() => changeSetting("greenEnabled", greenEnabled)}
-              />
-            </Group>
-          </Menu.Item>
-
-          <Menu.Label>Misc.</Menu.Label>
-          <Menu.Item
-            icon={<IconQuestionMark size={14} />}
+            icon={<IconHelp size={14} />}
             onClick={() => setHelpOpened(true)}
           >
             Help
