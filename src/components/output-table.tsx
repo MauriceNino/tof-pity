@@ -111,7 +111,7 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
       </td>
       <td>
         <Button
-          variant="light"
+          variant={currentPity === 0 ? "subtle" : "light"}
           onClick={() =>
             dispatch(
               stateActions.registerDrop({
@@ -120,7 +120,6 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
               })
             )
           }
-          disabled={currentPity === 0}
           sx={{
             "&[data-disabled]": { color: colors.gray[6] },
           }}
