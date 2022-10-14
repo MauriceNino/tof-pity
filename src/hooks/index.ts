@@ -1,7 +1,7 @@
 import { useMantineTheme } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { selectSettings } from "../redux/settingsSlice";
-import { useAppSelector } from "../redux/store";
+import { selectSettings, settingsActions } from "../redux/settingsSlice";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import { GearTypes, JODrops, MatrixTypes } from "../types/joint-ops";
 
 export const useWindowSize = () => {
@@ -56,4 +56,21 @@ export const useDropTableOrder = (respectSettings = true) => {
     dropTable.push(GearTypes.Green, MatrixTypes.Green);
 
   return dropTable;
+};
+
+export const useVersionMigrations = () => {
+  const dispatch = useAppDispatch();
+  const settings = useAppSelector(selectSettings);
+
+  useEffect(() => {
+    if (settings.compactLayout == null) {
+      dispatch(settingsActions.changeSetting({ compactLayout: true }));
+    }
+    if (settings.chipCounter == null) {
+      dispatch(settingsActions.changeSetting({ chipCounter: false }));
+    }
+    if (settings.chipCounterWarning == null) {
+      dispatch(settingsActions.changeSetting({ chipCounterWarning: true }));
+    }
+  }, []);
 };

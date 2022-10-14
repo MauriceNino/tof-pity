@@ -10,6 +10,8 @@ export type SettingsState = {
   blueEnabled: boolean;
   greenEnabled: boolean;
   compactLayout: boolean;
+  chipCounter: boolean;
+  chipCounterWarning: boolean;
 };
 
 const initialState: SettingsState = {
@@ -20,6 +22,8 @@ const initialState: SettingsState = {
   blueEnabled: true,
   greenEnabled: true,
   compactLayout: true,
+  chipCounter: false,
+  chipCounterWarning: true,
 };
 
 export const settingsSlice = createSlice({

@@ -2,7 +2,7 @@ import { Box, createStyles, DefaultMantineColor, Tuple } from "@mantine/core";
 import { motion } from "framer-motion";
 import { FC } from "react";
 import { PityCounter } from "./components/pity-counter";
-import { useIsCompact } from "./hooks";
+import { useIsCompact, useVersionMigrations } from "./hooks";
 
 type ExtendedCustomColors =
   | "gold-items"
@@ -44,6 +44,8 @@ const useStyles = createStyles((t, { compact }: { compact: boolean }) => ({
 export const App: FC = () => {
   const compact = useIsCompact();
   const { classes } = useStyles({ compact });
+
+  useVersionMigrations();
 
   return (
     <Box className={classes.background}>

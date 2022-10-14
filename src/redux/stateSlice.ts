@@ -41,6 +41,7 @@ export type State = {
     >
   >;
   changeHistory: History[];
+  currentChips: number | null;
 };
 
 export const historyIsChestOpen = (
@@ -54,6 +55,7 @@ export const historyIsItemDrop = (
 const initialState: State = {
   joCounts: {},
   changeHistory: [],
+  currentChips: null,
 };
 
 const getPity = (type: JODrops, chipEnabled: boolean) => {
@@ -110,53 +112,82 @@ export const stateSlice = createSlice({
   reducers: {
     openChest: (
       state,
-      action: PayloadAction<{ stage: JOStages; chipEnabled: boolean }>
+      {
+        payload: { selectedStage, chipCounter, chipEnabled },
+      }: PayloadAction<{
+        selectedStage: JOStages;
+        chipCounter: boolean;
+        chipEnabled: boolean;
+      }>
     ) => {
-      const stage = state.joCounts[action.payload.stage];
+      const stage = state.joCounts[selectedStage];
+
+      const realChipEnabled = chipCounter
+        ? state.currentChips != null && state.currentChips > 0
+        : chipEnabled;
+
       if (stage != null) {
-        addToAll(stage.counts, 1, action.payload.chipEnabled);
+        addToAll(stage.counts, 1, realChipEnabled);
       } else {
-        state.joCounts[action.payload.stage] = {
+        state.joCounts[selectedStage] = {
           counts: Object.fromEntries(
-            types.map((t) => [
-              t,
-              { currentPity: getPity(t, action.payload.chipEnabled) },
-            ])
+            types.map((t) => [t, { currentPity: getPity(t, realChipEnabled) }])
           ) as PerItemCount,
         };
       }
 
+      if (chipCounter && state.currentChips != null && state.currentChips > 0) {
+        state.currentChips = state.currentChips - 1;
+      }
+
       state.changeHistory.push({
         type: HistoryChangeType.CHEST_OPEN,
-        stage: action.payload.stage,
-        withChip: action.payload.chipEnabled,
+        stage: selectedStage,
+        withChip: realChipEnabled,
         ts: moment().valueOf(),
       });
     },
     registerDrop: (
       state,
-      action: PayloadAction<{ stage: JOStages; type: JODrops }>
+      {
+        payload: { selectedStage, drop },
+      }: PayloadAction<{
+        drop: JODrops;
+        selectedStage: JOStages;
+      }>
     ) => {
-      const stage = state.joCounts[action.payload.stage];
+      const stage = state.joCounts[selectedStage];
       if (stage) {
         state.changeHistory.push({
           type: HistoryChangeType.ITEM_DROP,
-          stage: action.payload.stage,
-          item: action.payload.type,
-          pity: stage.counts[action.payload.type].currentPity,
+          stage: selectedStage,
+          item: drop,
+          pity: stage.counts[drop].currentPity,
           ts: moment().valueOf(),
         });
 
-        stage.counts[action.payload.type].currentPity = 0;
+        stage.counts[drop].currentPity = 0;
       }
     },
-    goBackHistory: (state) => {
+    goBackHistory: (
+      state,
+      {
+        payload: { chipCounter },
+      }: PayloadAction<{
+        chipCounter: boolean;
+      }>
+    ) => {
       const lastHistory = state.changeHistory.pop();
       if (lastHistory) {
         const stage = state.joCounts[lastHistory.stage];
 
         if (historyIsChestOpen(lastHistory) && stage) {
           addToAll(stage.counts, -1, lastHistory.withChip);
+
+          if (lastHistory.withChip && chipCounter) {
+            state.currentChips =
+              state.currentChips == null ? 1 : state.currentChips + 1;
+          }
         }
         if (historyIsItemDrop(lastHistory) && stage) {
           stage.counts[lastHistory.item].currentPity = lastHistory.pity;
@@ -172,6 +203,9 @@ export const stateSlice = createSlice({
     },
     removeSpecificHistory: (state, action: PayloadAction<number>) => {
       state.changeHistory.splice(action.payload, 1);
+    },
+    setChipCounter: (state, action: PayloadAction<number | null>) => {
+      state.currentChips = action.payload;
     },
   },
 });

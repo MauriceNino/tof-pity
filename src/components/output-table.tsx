@@ -115,8 +115,8 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
           onClick={() =>
             dispatch(
               stateActions.registerDrop({
-                stage: selectedStage,
-                type: item,
+                drop: item,
+                selectedStage,
               })
             )
           }

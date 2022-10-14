@@ -11,29 +11,14 @@ import { FC, useState } from "react";
 import { HelpModal } from "../modals/help";
 import { HistoryModal } from "../modals/history";
 import { SettingsModal } from "../modals/settings";
-import {
-  selectSettings,
-  settingsActions,
-  SettingsState,
-} from "../redux/settingsSlice";
+import { selectSettings } from "../redux/settingsSlice";
 import { selectState, stateActions } from "../redux/stateSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 
 export const SettingsMenu: FC = () => {
   const dispatch = useAppDispatch();
-  const {
-    goldEnabled,
-    purpleEnabled,
-    blueEnabled,
-    greenEnabled,
-    compactLayout,
-  } = useAppSelector(selectSettings);
   const { changeHistory } = useAppSelector(selectState);
-
-  const changeSetting = <T extends keyof SettingsState>(
-    key: T,
-    value: SettingsState[T]
-  ) => dispatch(settingsActions.changeSetting({ [key]: value }));
+  const { chipCounter } = useAppSelector(selectSettings);
 
   const [helpOpened, setHelpOpened] = useState(false);
   const [settingsOpened, setSettingsOpened] = useState(false);
@@ -45,7 +30,13 @@ export const SettingsMenu: FC = () => {
         size="lg"
         variant="transparent"
         disabled={changeHistory.length === 0}
-        onClick={() => dispatch(stateActions.goBackHistory())}
+        onClick={() =>
+          dispatch(
+            stateActions.goBackHistory({
+              chipCounter,
+            })
+          )
+        }
       >
         <IconArrowBackUp size={26} />
       </ActionIcon>

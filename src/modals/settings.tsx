@@ -1,4 +1,5 @@
 import {
+  Box,
   Group,
   Modal,
   Stack,
@@ -6,6 +7,7 @@ import {
   Text,
   useMantineTheme,
 } from "@mantine/core";
+import { AnimatePresence, motion } from "framer-motion";
 import { FC } from "react";
 import {
   selectSettings,
@@ -13,6 +15,8 @@ import {
   SettingsState,
 } from "../redux/settingsSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
+
+const MotionGroup = motion(Group);
 
 export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
   opened,
@@ -25,13 +29,15 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
     blueEnabled,
     greenEnabled,
     compactLayout,
+    chipCounter,
+    chipCounterWarning,
   } = useAppSelector(selectSettings);
 
   const changeSetting = <T extends keyof SettingsState>(
     key: T,
     value: SettingsState[T]
   ) => dispatch(settingsActions.changeSetting({ [key]: value }));
-  const { colors } = useMantineTheme();
+  const { colors, spacing } = useMantineTheme();
 
   return (
     <Modal
@@ -47,16 +53,44 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
       title="Settings"
     >
       <Stack spacing="xl">
-        <Stack spacing="xs">
-          <Text weight="bold">Features</Text>
-          <Group position="apart">
-            <Text>Compact Layout</Text>
-            <Switch
-              checked={compactLayout}
-              onChange={() => changeSetting("compactLayout", !compactLayout)}
-            />
-          </Group>
-        </Stack>
+        <Box>
+          <Stack spacing="xs">
+            <Text weight="bold">Features</Text>
+            <Group position="apart">
+              <Text>Compact Layout</Text>
+              <Switch
+                checked={compactLayout}
+                onChange={() => changeSetting("compactLayout", !compactLayout)}
+              />
+            </Group>
+            <Group position="apart">
+              <Text>JO-Chip Counter</Text>
+              <Switch
+                checked={chipCounter}
+                onChange={() => changeSetting("chipCounter", !chipCounter)}
+              />
+            </Group>
+          </Stack>
+          <AnimatePresence>
+            {chipCounter && (
+              <MotionGroup
+                style={{ overflow: "hidden" }}
+                initial={{ height: 0, marginTop: 0, opacity: 0 }}
+                animate={{ height: "auto", marginTop: spacing.xs, opacity: 1 }}
+                exit={{ height: 0, marginTop: 0, opacity: 0 }}
+                position="apart"
+              >
+                <Text>JO-Chip Counter Warning</Text>
+                <Switch
+                  checked={chipCounterWarning}
+                  onChange={() =>
+                    changeSetting("chipCounterWarning", !chipCounterWarning)
+                  }
+                />
+              </MotionGroup>
+            )}
+          </AnimatePresence>
+        </Box>
 
         <Stack spacing="xs">
           <Text weight="bold">Enabled Items</Text>
