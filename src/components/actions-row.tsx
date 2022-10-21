@@ -45,6 +45,8 @@ export const ActionsRow: FC = () => {
   const isCompactMenu = width < COMPACT_MENU_BREAKPOINT && compactLayout;
   const isSeparateButton = width < SEPARATE_BUTTON_BREAKPOINT && compactLayout;
 
+  const { height } = useWindowSize();
+
   return (
     <Group position="apart" sx={{ flexWrap: "nowrap" }}>
       <Group>
@@ -59,6 +61,7 @@ export const ActionsRow: FC = () => {
           )}
           transition="fade"
           transitionDuration={120}
+          maxDropdownHeight={Math.max(Math.min(height - 100, 280), 100)}
           sx={{
             width: isCompactMenu ? 80 : 220,
             transition: "width .3s ease-in-out",
