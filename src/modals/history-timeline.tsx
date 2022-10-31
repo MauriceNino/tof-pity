@@ -13,7 +13,7 @@ import {
 } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { JODrops, JOStages } from '../types/joint-ops';
-import { itemToColor, last } from '../util/util';
+import { itemToColor, last, lastIndex } from '../util/util';
 import { ConfirmModal } from './confirm';
 
 const timeStr = (ts: number) => {
@@ -44,14 +44,36 @@ export const HistoryTimeline: FC = () => {
 
             if (historyIsItemDrop(curr)) {
               const lastChestOpen = last(acc, el => el.stage === curr.stage);
+              const lastDrop = lastIndex(
+                acc,
+                el =>
+                  el.stage === curr.stage &&
+                  el.drops.some(d => d.item === curr.item)
+              );
+              const sinceLastDrop =
+                acc
+                  .slice(lastDrop === -1 ? 0 : lastDrop)
+                  .filter(el => el.stage === curr.stage).length -
+                (lastDrop === -1 ? 0 : 1);
+
               if (lastChestOpen != null) {
-                lastChestOpen.drops.push([curr.item, i]);
+                lastChestOpen.drops.push({
+                  item: curr.item,
+                  index: i,
+                  onChest: sinceLastDrop,
+                });
               } else {
                 acc.push({
                   index: i,
                   ts: undefined,
                   stage: curr.stage,
-                  drops: [[curr.item, i]],
+                  drops: [
+                    {
+                      item: curr.item,
+                      index: i,
+                      onChest: sinceLastDrop,
+                    },
+                  ],
                 });
               }
             }
@@ -62,7 +84,11 @@ export const HistoryTimeline: FC = () => {
             index: number;
             ts?: number;
             stage: JOStages;
-            drops: [JODrops, number][];
+            drops: {
+              item: JODrops;
+              index: number;
+              onChest: number;
+            }[];
           }[]
         )
         .reverse(),
@@ -81,7 +107,7 @@ export const HistoryTimeline: FC = () => {
                 <ThemeIcon
                   size={22}
                   variant='filled'
-                  color={itemToColor(colors, his.drops[0][0])}
+                  color={itemToColor(colors, his.drops[0].item)}
                   radius='xl'
                 >
                   <IconCheck color={colors.gray[8]} size={14} />
@@ -92,11 +118,11 @@ export const HistoryTimeline: FC = () => {
             {his.drops.length > 0 && (
               <Text color='dimmed' size='sm'>
                 Drops:{' '}
-                {his.drops.map(([drop, index], i) => (
-                  <Fragment key={drop + i}>
+                {his.drops.map(({ item, index, onChest }, i) => (
+                  <Fragment key={item + i}>
                     <RemovableText
-                      color={itemToColor(colors, drop)}
-                      text={DROPS_NAMES[drop]}
+                      color={itemToColor(colors, item)}
+                      text={`${DROPS_NAMES[item]} [Chest ${onChest}]`}
                       onRemove={() => {
                         setConfirmOpened(true);
                         setIndexToRemove(index);

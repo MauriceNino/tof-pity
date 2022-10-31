@@ -12,5 +12,8 @@ export const itemToColor = (colors: MantineTheme['colors'], item: JODrops) => {
     : colors['green-items'][0];
 };
 
+export const lastIndex = <T>(arr: T[], matcher: (el: T) => boolean): number =>
+  arr.map(el => matcher(el)).lastIndexOf(true);
+
 export const last = <T>(arr: T[], matcher: (el: T) => boolean): T | undefined =>
-  arr[arr.map(el => matcher(el)).lastIndexOf(true)];
+  arr[lastIndex(arr, matcher)];
