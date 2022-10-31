@@ -111,6 +111,26 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
     [MatrixTypes.Purple]: buildRates(0, 0.66, 2.33, 2, 7, 6.33),
     [MatrixTypes.Gold]: buildRates(0, 0.14, 0.49, 8, 33, 1.33),
   },
+  [JOStages.HARD_I]: {
+    [GearTypes.Blue]: NO_CHANCE,
+    [GearTypes.Green]: NO_CHANCE,
+    [GearTypes.Purple]: buildRates(-1, -1, -1, -1, -1, -1),
+    [GearTypes.Gold]: buildRates(-1, -1, -1, -1, -1, -1),
+    [MatrixTypes.Blue]: NO_CHANCE,
+    [MatrixTypes.Green]: NO_CHANCE,
+    [MatrixTypes.Purple]: buildRates(-1, -1, -1, -1, -1, -1),
+    [MatrixTypes.Gold]: buildRates(-1, -1, -1, -1, -1, -1),
+  },
+  [JOStages.HARD_II]: {
+    [GearTypes.Blue]: NO_CHANCE,
+    [GearTypes.Green]: NO_CHANCE,
+    [GearTypes.Purple]: buildRates(-1, -1, -1, -1, -1, -1),
+    [GearTypes.Gold]: buildRates(-1, -1, -1, -1, -1, -1),
+    [MatrixTypes.Blue]: NO_CHANCE,
+    [MatrixTypes.Green]: NO_CHANCE,
+    [MatrixTypes.Purple]: buildRates(-1, -1, -1, -1, -1, -1),
+    [MatrixTypes.Gold]: buildRates(-1, -1, -1, -1, -1, -1),
+  },
 };
 
 export const JOINT_OPS_NAMES: Record<JOStages, [string, string]> = {
@@ -122,6 +142,8 @@ export const JOINT_OPS_NAMES: Record<JOStages, [string, string]> = {
   [JOStages.VI]: ['Joint Operation VI (Lv. 50)', 'VI'],
   [JOStages.VII]: ['Joint Operation VII (Lv. 60)', 'VII'],
   [JOStages.VIII]: ['Joint Operation VIII (Lv. 70)', 'VIII'],
+  [JOStages.HARD_I]: ['Joint Operation HARD I (Lv. 75)', 'HARD I'],
+  [JOStages.HARD_II]: ['Joint Operation HARD II (Lv. 80)', 'HARD II'],
 };
 
 export const DROPS_NAMES: Record<JODrops, string> = {

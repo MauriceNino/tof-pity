@@ -27,6 +27,10 @@ const getDropsChance = (
   chest: 0 | 1 | 2,
   currentPity = 0
 ) => {
+  if (rates.chests[chest] === -1) {
+    return '? %';
+  }
+
   const isSpecialFall =
     rates.specialFall && currentPity >= rates.specialFall.start;
 
@@ -103,7 +107,7 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
             </Text>
             <Text span className={classes.opacityChange}>
               {' '}
-              / {rates.specialFall.end + 1}
+              / {rates.specialFall.end === -1 ? '?' : rates.specialFall.end + 1}
             </Text>
           </>
         ) : (

@@ -21,6 +21,8 @@ export enum JOStages {
   VI = 'jo_stage_6',
   VII = 'jo_stage_7',
   VIII = 'jo_stage_8',
+  HARD_I = 'jo_stage_hard_1',
+  HARD_II = 'jo_stage_hard_2',
 }
 
 export type PerChestRates = {
