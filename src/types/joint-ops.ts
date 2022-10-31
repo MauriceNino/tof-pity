@@ -1,26 +1,26 @@
 export enum GearTypes {
-  Green = "green_gear",
-  Blue = "blue_gear",
-  Purple = "purple_gear",
-  Gold = "gold_gear",
+  Green = 'green_gear',
+  Blue = 'blue_gear',
+  Purple = 'purple_gear',
+  Gold = 'gold_gear',
 }
 
 export enum MatrixTypes {
-  Green = "green_matrix",
-  Blue = "blue_matrix",
-  Purple = "purple_matrix",
-  Gold = "gold_matrix",
+  Green = 'green_matrix',
+  Blue = 'blue_matrix',
+  Purple = 'purple_matrix',
+  Gold = 'gold_matrix',
 }
 
 export enum JOStages {
-  I = "jo_stage_1",
-  II = "jo_stage_2",
-  III = "jo_stage_3",
-  IV = "jo_stage_4",
-  V = "jo_stage_5",
-  VI = "jo_stage_6",
-  VII = "jo_stage_7",
-  VIII = "jo_stage_8",
+  I = 'jo_stage_1',
+  II = 'jo_stage_2',
+  III = 'jo_stage_3',
+  IV = 'jo_stage_4',
+  V = 'jo_stage_5',
+  VI = 'jo_stage_6',
+  VII = 'jo_stage_7',
+  VIII = 'jo_stage_8',
 }
 
 export type PerChestRates = {

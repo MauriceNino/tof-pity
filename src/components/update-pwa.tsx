@@ -1,6 +1,6 @@
-import { Button, Dialog, Group, Stack, Text } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { useRegisterSW } from "virtual:pwa-register/react";
+import { Button, Dialog, Group, Stack, Text } from '@mantine/core';
+import { useEffect, useState } from 'react';
+import { useRegisterSW } from 'virtual:pwa-register/react';
 
 export const UpdatePwa = () => {
   const [loading, setLoading] = useState(false);
@@ -16,8 +16,8 @@ export const UpdatePwa = () => {
         }, 60 * 60 * 1000);
       }
     },
-    onRegisterError: (error) => {
-      console.error("SW registration error", error);
+    onRegisterError: error => {
+      console.error('SW registration error', error);
     },
   });
 
@@ -26,7 +26,7 @@ export const UpdatePwa = () => {
   }, [needRefresh]);
 
   return (
-    <Dialog opened={opened} radius="md" sx={{ width: "unset" }}>
+    <Dialog opened={opened} radius='md' sx={{ width: 'unset' }}>
       <Stack>
         <Text>Application update available!</Text>
 
@@ -46,8 +46,8 @@ export const UpdatePwa = () => {
             Update
           </Button>
           <Button
-            variant="subtle"
-            color="red.6"
+            variant='subtle'
+            color='red.6'
             onClick={() => {
               setNeedRefresh(false);
               setOpened(false);

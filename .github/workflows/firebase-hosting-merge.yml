@@ -1,5 +1,5 @@
 name: deploy on push
-"on":
+'on':
   push:
     branches:
       - main
@@ -11,7 +11,7 @@ jobs:
       - run: yarn && yarn build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_TOF_PITY }}"
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_TOF_PITY }}'
           channelId: live
           projectId: tof-pity

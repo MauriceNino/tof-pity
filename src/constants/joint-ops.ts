@@ -5,7 +5,7 @@ import {
   MatrixTypes,
   PerChestRates,
   PerItemRates,
-} from "../types/joint-ops";
+} from '../types/joint-ops';
 
 const buildRates = (
   c1: number,
@@ -28,7 +28,7 @@ const buildRates = (
 
 const NO_CHANCE = buildRates(0, 0, 0);
 export const isNoChance = (stage: JOStages, item: JODrops) =>
-  JOINT_OPS_RATES[stage][item].chests.every((c) => c === 0);
+  JOINT_OPS_RATES[stage][item].chests.every(c => c === 0);
 
 export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
   [JOStages.I]: {
@@ -114,25 +114,25 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
 };
 
 export const JOINT_OPS_NAMES: Record<JOStages, [string, string]> = {
-  [JOStages.I]: ["Joint Operation I (Lv. 20)", "I"],
-  [JOStages.II]: ["Joint Operation II (Lv. 25)", "II"],
-  [JOStages.III]: ["Joint Operation III (Lv. 31)", "III"],
-  [JOStages.IV]: ["Joint Operation IV (Lv. 37)", "IV"],
-  [JOStages.V]: ["Joint Operation V (Lv. 43)", "V"],
-  [JOStages.VI]: ["Joint Operation VI (Lv. 50)", "VI"],
-  [JOStages.VII]: ["Joint Operation VII (Lv. 60)", "VII"],
-  [JOStages.VIII]: ["Joint Operation VIII (Lv. 70)", "VIII"],
+  [JOStages.I]: ['Joint Operation I (Lv. 20)', 'I'],
+  [JOStages.II]: ['Joint Operation II (Lv. 25)', 'II'],
+  [JOStages.III]: ['Joint Operation III (Lv. 31)', 'III'],
+  [JOStages.IV]: ['Joint Operation IV (Lv. 37)', 'IV'],
+  [JOStages.V]: ['Joint Operation V (Lv. 43)', 'V'],
+  [JOStages.VI]: ['Joint Operation VI (Lv. 50)', 'VI'],
+  [JOStages.VII]: ['Joint Operation VII (Lv. 60)', 'VII'],
+  [JOStages.VIII]: ['Joint Operation VIII (Lv. 70)', 'VIII'],
 };
 
 export const DROPS_NAMES: Record<JODrops, string> = {
-  [GearTypes.Blue]: "Blue Armor",
-  [GearTypes.Green]: "Green Armor",
-  [GearTypes.Purple]: "Purple Armor",
-  [GearTypes.Gold]: "Gold Armor",
-  [MatrixTypes.Blue]: "Blue Matrix",
-  [MatrixTypes.Green]: "Green Matrix",
-  [MatrixTypes.Purple]: "Purple Matrix",
-  [MatrixTypes.Gold]: "Gold Matrix",
+  [GearTypes.Blue]: 'Blue Armor',
+  [GearTypes.Green]: 'Green Armor',
+  [GearTypes.Purple]: 'Purple Armor',
+  [GearTypes.Gold]: 'Gold Armor',
+  [MatrixTypes.Blue]: 'Blue Matrix',
+  [MatrixTypes.Green]: 'Green Matrix',
+  [MatrixTypes.Purple]: 'Purple Matrix',
+  [MatrixTypes.Gold]: 'Gold Matrix',
 };
 
 export const SUPPLY_CHIP_BEHAVIOR: Record<

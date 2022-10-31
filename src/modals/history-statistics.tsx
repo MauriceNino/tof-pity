@@ -1,30 +1,31 @@
-import { Stack, Table, Text, useMantineTheme } from "@mantine/core";
-import { FC } from "react";
+import { Stack, Table, Text, useMantineTheme } from '@mantine/core';
+import { FC } from 'react';
+
 import {
   DROPS_NAMES,
   isNoChance,
   JOINT_OPS_NAMES,
   JOINT_OPS_RATES,
   SUPPLY_CHIP_BEHAVIOR,
-} from "../constants/joint-ops";
-import { useDropTableOrder } from "../hooks";
+} from '../constants/joint-ops';
+import { useDropTableOrder } from '../hooks';
 import {
   historyIsChestOpen,
   historyIsItemDrop,
   selectState,
   State,
-} from "../redux/stateSlice";
-import { useAppSelector } from "../redux/store";
-import { JODrops, JOStages } from "../types/joint-ops";
-import { itemToColor } from "../util/util";
+} from '../redux/stateSlice';
+import { useAppSelector } from '../redux/store';
+import { JODrops, JOStages } from '../types/joint-ops';
+import { itemToColor } from '../util/util';
 
 const isNoDrop = (
-  history: State["changeHistory"],
+  history: State['changeHistory'],
   stage: JOStages,
   item: JODrops
 ) =>
   !history.some(
-    (h) => historyIsItemDrop(h) && h.stage === stage && h.item === item
+    h => historyIsItemDrop(h) && h.stage === stage && h.item === item
   );
 
 export const HistoryStatistics: FC = () => {
@@ -33,24 +34,24 @@ export const HistoryStatistics: FC = () => {
   const dropTableOrder = useDropTableOrder();
 
   return (
-    <Stack spacing="xl">
+    <Stack spacing='xl'>
       {Object.entries(state.joCounts)
         .filter(
           ([stage]) =>
-            state.changeHistory.filter((h) => h.stage === stage).length > 0
+            state.changeHistory.filter(h => h.stage === stage).length > 0
         )
         .map(([stage]) => (
           <Stack sx={{ gap: 0 }} key={stage}>
             <Stack sx={{ gap: 0 }}>
-              <Text weight="bold" size="sm">
+              <Text weight='bold' size='sm'>
                 {JOINT_OPS_NAMES[stage as JOStages][0]}
               </Text>
-              <Text weight="bold" size="sm" color="dimmed">
+              <Text weight='bold' size='sm' color='dimmed'>
                 {
                   state.changeHistory.filter(
-                    (h) => historyIsChestOpen(h) && h.stage === stage
+                    h => historyIsChestOpen(h) && h.stage === stage
                   ).length
-                }{" "}
+                }{' '}
                 Chests opened
               </Text>
             </Stack>
@@ -67,13 +68,13 @@ export const HistoryStatistics: FC = () => {
               <tbody>
                 {dropTableOrder
                   .filter(
-                    (drop) =>
+                    drop =>
                       !isNoChance(stage as JOStages, drop) &&
                       !isNoDrop(state.changeHistory, stage as JOStages, drop)
                   )
-                  .map((drop) => {
+                  .map(drop => {
                     const weightedOpened = state.changeHistory
-                      .filter((h) => historyIsChestOpen(h) && h.stage === stage)
+                      .filter(h => historyIsChestOpen(h) && h.stage === stage)
                       .reduce(
                         (acc, h) =>
                           acc +
@@ -85,7 +86,7 @@ export const HistoryStatistics: FC = () => {
                         0
                       );
                     const drops = state.changeHistory.filter(
-                      (h) =>
+                      h =>
                         historyIsItemDrop(h) &&
                         h.stage === stage &&
                         h.item === drop

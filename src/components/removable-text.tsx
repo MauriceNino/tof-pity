@@ -1,6 +1,6 @@
-import { Text, useMantineTheme } from "@mantine/core";
-import { IconX } from "@tabler/icons";
-import { FC } from "react";
+import { Text, useMantineTheme } from '@mantine/core';
+import { IconX } from '@tabler/icons';
+import { FC } from 'react';
 
 export const RemovableText: FC<{
   color: string;
@@ -13,13 +13,13 @@ export const RemovableText: FC<{
     <Text
       sx={{
         color: color,
-        [".icon"]: {
+        ['.icon']: {
           width: 0,
-          transition: "width .1s ease-in-out",
-          cursor: "pointer",
+          transition: 'width .1s ease-in-out',
+          cursor: 'pointer',
         },
-        ["&:hover"]: {
-          [".icon"]: {
+        ['&:hover']: {
+          ['.icon']: {
             width: 17,
           },
         },
@@ -30,7 +30,7 @@ export const RemovableText: FC<{
 
       <IconX
         size={17}
-        style={{ verticalAlign: "middle", color: colors.red[4] }}
+        style={{ verticalAlign: 'middle', color: colors.red[4] }}
         onClick={onRemove}
       />
     </Text>

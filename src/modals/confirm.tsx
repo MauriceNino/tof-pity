@@ -1,5 +1,5 @@
-import { Button, Modal, Stack, Text, useMantineTheme } from "@mantine/core";
-import { FC } from "react";
+import { Button, Modal, Stack, Text, useMantineTheme } from '@mantine/core';
+import { FC } from 'react';
 
 export const ConfirmModal: FC<{
   opened: boolean;
@@ -15,8 +15,8 @@ export const ConfirmModal: FC<{
 
   return (
     <Modal
-      size="sm"
-      radius="lg"
+      size='sm'
+      radius='lg'
       styles={{
         modal: {
           backgroundColor: colors.dark[5],
@@ -27,11 +27,11 @@ export const ConfirmModal: FC<{
       title={title}
     >
       <Stack>
-        <Text weight="bold">{text}</Text>
+        <Text weight='bold'>{text}</Text>
 
-        <Stack spacing="xs">
+        <Stack spacing='xs'>
           <Button
-            color={danger ? "red.5" : undefined}
+            color={danger ? 'red.5' : undefined}
             onClick={() => {
               onConfirm();
               close();
@@ -39,7 +39,7 @@ export const ConfirmModal: FC<{
           >
             {yesText}
           </Button>
-          <Button variant="subtle" onClick={() => close()}>
+          <Button variant='subtle' onClick={() => close()}>
             {noText}
           </Button>
         </Stack>

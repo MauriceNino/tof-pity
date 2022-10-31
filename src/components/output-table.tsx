@@ -4,20 +4,21 @@ import {
   Table,
   Text,
   useMantineTheme,
-} from "@mantine/core";
-import { AnimatePresence, LayoutGroup, motion } from "framer-motion";
-import { FC } from "react";
+} from '@mantine/core';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import { FC } from 'react';
+
 import {
   DROPS_NAMES,
   isNoChance,
   JOINT_OPS_RATES,
-} from "../constants/joint-ops";
-import { useDropTableOrder, useWindowSize } from "../hooks";
-import { selectSettings } from "../redux/settingsSlice";
-import { selectState, stateActions } from "../redux/stateSlice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { JODrops, PerChestRates } from "../types/joint-ops";
-import { itemToColor } from "../util/util";
+} from '../constants/joint-ops';
+import { useDropTableOrder, useWindowSize } from '../hooks';
+import { selectSettings } from '../redux/settingsSlice';
+import { selectState, stateActions } from '../redux/stateSlice';
+import { useAppDispatch, useAppSelector } from '../redux/store';
+import { JODrops, PerChestRates } from '../types/joint-ops';
+import { itemToColor } from '../util/util';
 
 const CHEST_SHOW_BREAKPOINT = 565;
 
@@ -37,16 +38,16 @@ const getDropsChance = (
 
 const useStyles = createStyles((t, _, getRef) => ({
   tableRow: {
-    [`&:hover .${getRef("opacity-change")}`]: {
+    [`&:hover .${getRef('opacity-change')}`]: {
       opacity: 1,
     },
-    [`.${getRef("opacity-change")}`]: {
+    [`.${getRef('opacity-change')}`]: {
       opacity: 0.5,
-      transition: "all .1s ease-in-out",
+      transition: 'all .1s ease-in-out',
     },
   },
   opacityChange: {
-    ref: getRef("opacity-change"),
+    ref: getRef('opacity-change'),
   },
 }));
 
@@ -97,11 +98,11 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
       <td>
         {rates.specialFall ? (
           <>
-            <Text span weight="bold">
+            <Text span weight='bold'>
               {currentPity}
             </Text>
             <Text span className={classes.opacityChange}>
-              {" "}
+              {' '}
               / {rates.specialFall.end + 1}
             </Text>
           </>
@@ -111,7 +112,7 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
       </td>
       <td>
         <Button
-          variant={currentPity === 0 ? "subtle" : "light"}
+          variant={currentPity === 0 ? 'subtle' : 'light'}
           onClick={() =>
             dispatch(
               stateActions.registerDrop({
@@ -121,7 +122,7 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
             )
           }
           sx={{
-            "&[data-disabled]": { color: colors.gray[6] },
+            '&[data-disabled]': { color: colors.gray[6] },
           }}
         >
           Drop
@@ -132,12 +133,12 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
 };
 
 const TABLE_HEADINGS = [
-  "",
-  "Chest #1",
-  "Chest #2",
-  "Chest #3",
-  "Current Pity",
-  "",
+  '',
+  'Chest #1',
+  'Chest #2',
+  'Chest #3',
+  'Current Pity',
+  '',
 ];
 
 export const OutputTable: FC = () => {
@@ -167,8 +168,8 @@ export const OutputTable: FC = () => {
         <tbody>
           <AnimatePresence>
             {dropTableOrder
-              .filter((t) => !isNoChance(selectedStage, t))
-              .map((t) => (
+              .filter(t => !isNoChance(selectedStage, t))
+              .map(t => (
                 <TableRow key={t} item={t} />
               ))}
           </AnimatePresence>

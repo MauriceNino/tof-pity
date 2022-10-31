@@ -1,6 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { JOStages } from "../types/joint-ops";
-import { RootState } from "./store";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+
+import { JOStages } from '../types/joint-ops';
+import { RootState } from './store';
 
 export type SettingsState = {
   selectedStage: JOStages;
@@ -27,7 +28,7 @@ const initialState: SettingsState = {
 };
 
 export const settingsSlice = createSlice({
-  name: "settings",
+  name: 'settings',
   initialState,
   reducers: {
     changeSetting: (state, action: PayloadAction<Partial<SettingsState>>) => {

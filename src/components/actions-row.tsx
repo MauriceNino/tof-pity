@@ -5,20 +5,21 @@ import {
   Switch,
   TextInput,
   useMantineTheme,
-} from "@mantine/core";
-import { FC } from "react";
-import SupplyChip from "../assets/supply_chip.png";
-import { JOINT_OPS_NAMES } from "../constants/joint-ops";
-import { useWindowSize } from "../hooks";
+} from '@mantine/core';
+import { FC } from 'react';
+
+import SupplyChip from '../assets/supply_chip.png';
+import { JOINT_OPS_NAMES } from '../constants/joint-ops';
+import { useWindowSize } from '../hooks';
 import {
   selectSettings,
   settingsActions,
   SettingsState,
-} from "../redux/settingsSlice";
-import { selectState, stateActions } from "../redux/stateSlice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { JOStages } from "../types/joint-ops";
-import { SettingsMenu } from "./settings-menu";
+} from '../redux/settingsSlice';
+import { selectState, stateActions } from '../redux/stateSlice';
+import { useAppDispatch, useAppSelector } from '../redux/store';
+import { JOStages } from '../types/joint-ops';
+import { SettingsMenu } from './settings-menu';
 
 const COMPACT_MENU_BREAKPOINT = 680;
 const SEPARATE_BUTTON_BREAKPOINT = 435;
@@ -48,42 +49,46 @@ export const ActionsRow: FC = () => {
   const { height } = useWindowSize();
 
   return (
-    <Group position="apart" sx={{ flexWrap: "nowrap" }}>
+    <Group position='apart' sx={{ flexWrap: 'nowrap' }}>
       <Group>
         <Select
           value={selectedStage}
-          onChange={(v) => changeSetting("selectedStage", v as JOStages)}
+          onChange={v => changeSetting('selectedStage', v as JOStages)}
           data={Object.entries(JOINT_OPS_NAMES).map(
             ([stage, [name, short_name]]) => ({
               value: stage,
               label: isCompactMenu ? short_name : name,
             })
           )}
-          transition="fade"
+          transition='fade'
           transitionDuration={120}
           maxDropdownHeight={Math.max(Math.min(height - 100, 280), 100)}
           sx={{
             width: isCompactMenu ? 80 : 220,
-            transition: "width .3s ease-in-out",
+            transition: 'width .3s ease-in-out',
           }}
         />
         {chipCounter && (
           <TextInput
-            value={state.currentChips == null ? "" : state.currentChips}
-            onChange={(e) =>
+            value={state.currentChips == null ? '' : state.currentChips}
+            onChange={e =>
               dispatch(
                 stateActions.setChipCounter(
-                  e.currentTarget.value === "" ? null : +e.currentTarget.value
+                  e.currentTarget.value === '' ? null : +e.currentTarget.value
                 )
               )
             }
             icon={
-              <img style={{ width: "80%", height: "80%" }} src={SupplyChip} />
+              <img
+                alt='Supply Chip'
+                style={{ width: '80%', height: '80%' }}
+                src={SupplyChip}
+              />
             }
-            placeholder={isCompactMenu ? "Chips" : "Supply Chips"}
+            placeholder={isCompactMenu ? 'Chips' : 'Supply Chips'}
             sx={{
               width: isCompactMenu ? 90 : 130,
-              transition: "width .3s ease-in-out",
+              transition: 'width .3s ease-in-out',
               input: {
                 borderColor: chipCounterWarning
                   ? state.currentChips == null || state.currentChips === 0
@@ -110,7 +115,7 @@ export const ActionsRow: FC = () => {
           sx={
             isSeparateButton
               ? {
-                  position: "fixed",
+                  position: 'fixed',
                   bottom: 20,
                   left: 20,
                   right: 20,
@@ -118,15 +123,15 @@ export const ActionsRow: FC = () => {
               : undefined
           }
         >
-          {isCompactMenu ? "Chest" : "Chest opened"}
+          {isCompactMenu ? 'Chest' : 'Chest opened'}
         </Button>
 
         {!chipCounter && (
           <Switch
-            label={isCompactMenu ? "JO-Chip" : "JO-Chip enabled"}
+            label={isCompactMenu ? 'JO-Chip' : 'JO-Chip enabled'}
             checked={chipEnabled}
-            onChange={(e) =>
-              changeSetting("chipEnabled", e.currentTarget.checked)
+            onChange={e =>
+              changeSetting('chipEnabled', e.currentTarget.checked)
             }
           />
         )}

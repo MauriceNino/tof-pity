@@ -1,4 +1,4 @@
-import { ActionIcon, Group, Menu } from "@mantine/core";
+import { ActionIcon, Group, Menu } from '@mantine/core';
 import {
   IconArrowBackUp,
   IconBrandGithub,
@@ -6,14 +6,15 @@ import {
   IconServer,
   IconSettings,
   IconTool,
-} from "@tabler/icons";
-import { FC, useState } from "react";
-import { HelpModal } from "../modals/help";
-import { HistoryModal } from "../modals/history";
-import { SettingsModal } from "../modals/settings";
-import { selectSettings } from "../redux/settingsSlice";
-import { selectState, stateActions } from "../redux/stateSlice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
+} from '@tabler/icons';
+import { FC, useState } from 'react';
+
+import { HelpModal } from '../modals/help';
+import { HistoryModal } from '../modals/history';
+import { SettingsModal } from '../modals/settings';
+import { selectSettings } from '../redux/settingsSlice';
+import { selectState, stateActions } from '../redux/stateSlice';
+import { useAppDispatch, useAppSelector } from '../redux/store';
 
 export const SettingsMenu: FC = () => {
   const dispatch = useAppDispatch();
@@ -25,10 +26,10 @@ export const SettingsMenu: FC = () => {
   const [historyOpened, setHistoryOpened] = useState(false);
 
   return (
-    <Group sx={{ flexWrap: "nowrap", alignSelf: "flex-start" }}>
+    <Group sx={{ flexWrap: 'nowrap', alignSelf: 'flex-start' }}>
       <ActionIcon
-        size="lg"
-        variant="transparent"
+        size='lg'
+        variant='transparent'
         disabled={changeHistory.length === 0}
         onClick={() =>
           dispatch(
@@ -51,9 +52,9 @@ export const SettingsMenu: FC = () => {
         close={() => setHistoryOpened(false)}
       />
 
-      <Menu shadow="md" radius="md" position="bottom-end">
+      <Menu shadow='md' radius='md' position='bottom-end'>
         <Menu.Target>
-          <ActionIcon size="lg">
+          <ActionIcon size='lg'>
             <IconSettings size={26} />
           </ActionIcon>
         </Menu.Target>
@@ -78,9 +79,9 @@ export const SettingsMenu: FC = () => {
           </Menu.Item>
           <Menu.Item
             icon={<IconBrandGithub size={14} />}
-            component="a"
-            href="https://github.com/MauriceNino/tof-pity"
-            target="_blank"
+            component='a'
+            href='https://github.com/MauriceNino/tof-pity'
+            target='_blank'
           >
             GitHub Project
           </Menu.Item>

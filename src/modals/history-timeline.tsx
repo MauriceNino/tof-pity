@@ -1,19 +1,20 @@
-import { Text, ThemeIcon, Timeline, useMantineTheme } from "@mantine/core";
-import { IconCheck } from "@tabler/icons";
-import moment from "moment";
-import { FC, Fragment, useMemo, useState } from "react";
-import { RemovableText } from "../components/removable-text";
-import { DROPS_NAMES, JOINT_OPS_NAMES } from "../constants/joint-ops";
+import { Text, ThemeIcon, Timeline, useMantineTheme } from '@mantine/core';
+import { IconCheck } from '@tabler/icons';
+import moment from 'moment';
+import { FC, Fragment, useMemo, useState } from 'react';
+
+import { RemovableText } from '../components/removable-text';
+import { DROPS_NAMES, JOINT_OPS_NAMES } from '../constants/joint-ops';
 import {
   historyIsChestOpen,
   historyIsItemDrop,
   selectState,
   stateActions,
-} from "../redux/stateSlice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { JODrops, JOStages } from "../types/joint-ops";
-import { itemToColor, last } from "../util/util";
-import { ConfirmModal } from "./confirm";
+} from '../redux/stateSlice';
+import { useAppDispatch, useAppSelector } from '../redux/store';
+import { JODrops, JOStages } from '../types/joint-ops';
+import { itemToColor, last } from '../util/util';
+import { ConfirmModal } from './confirm';
 
 const timeStr = (ts: number) => {
   return moment(ts).fromNow();
@@ -42,7 +43,7 @@ export const HistoryTimeline: FC = () => {
             }
 
             if (historyIsItemDrop(curr)) {
-              const lastChestOpen = last(acc, (el) => el.stage === curr.stage);
+              const lastChestOpen = last(acc, el => el.stage === curr.stage);
               if (lastChestOpen != null) {
                 lastChestOpen.drops.push([curr.item, i]);
               } else {
@@ -79,9 +80,9 @@ export const HistoryTimeline: FC = () => {
               his.drops.length > 0 ? (
                 <ThemeIcon
                   size={22}
-                  variant="filled"
+                  variant='filled'
                   color={itemToColor(colors, his.drops[0][0])}
-                  radius="xl"
+                  radius='xl'
                 >
                   <IconCheck color={colors.gray[8]} size={14} />
                 </ThemeIcon>
@@ -89,8 +90,8 @@ export const HistoryTimeline: FC = () => {
             }
           >
             {his.drops.length > 0 && (
-              <Text color="dimmed" size="sm">
-                Drops:{" "}
+              <Text color='dimmed' size='sm'>
+                Drops:{' '}
                 {his.drops.map(([drop, index], i) => (
                   <Fragment key={drop + i}>
                     <RemovableText
@@ -107,7 +108,7 @@ export const HistoryTimeline: FC = () => {
               </Text>
             )}
             {his.ts && (
-              <Text color="dimmed" size="sm">
+              <Text color='dimmed' size='sm'>
                 {timeStr(his.ts)}
               </Text>
             )}
@@ -121,10 +122,10 @@ export const HistoryTimeline: FC = () => {
         onConfirm={() =>
           dispatch(stateActions.removeSpecificHistory(indexToRemove))
         }
-        title="Are you sure?"
-        text="This operation can not be reversed and the drop will be deleted from the history."
-        yesText="Yes"
-        noText="Cancel"
+        title='Are you sure?'
+        text='This operation can not be reversed and the drop will be deleted from the history.'
+        yesText='Yes'
+        noText='Cancel'
         danger
       />
     </>

@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "eslint ."
   },
   "dependencies": {
     "@emotion/react": "11.10.4",
@@ -25,11 +26,28 @@
   "devDependencies": {
     "@types/react": "18.0.21",
     "@types/react-dom": "18.0.6",
+    "@typescript-eslint/eslint-plugin": "5.41.0",
+    "@typescript-eslint/parser": "5.41.0",
     "@vitejs/plugin-react": "2.1.0",
+    "eslint": "8.26.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-jsx-a11y": "6.6.1",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.31.10",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-simple-import-sort": "8.0.0",
     "firebase-tools": "11.13.0",
+    "prettier": "2.7.1",
     "typescript": "4.8.4",
     "vite": "3.1.6",
     "vite-plugin-pwa": "0.13.1"
+  },
+  "prettier": {
+    "trailingComma": "es5",
+    "singleQuote": true,
+    "arrowParens": "avoid",
+    "jsxSingleQuote": true
   },
   "packageManager": "yarn@3.2.4"
 }

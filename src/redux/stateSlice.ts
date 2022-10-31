@@ -1,18 +1,19 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import moment from "moment";
-import { SUPPLY_CHIP_BEHAVIOR } from "../constants/joint-ops";
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import moment from 'moment';
+
+import { SUPPLY_CHIP_BEHAVIOR } from '../constants/joint-ops';
 import {
   GearTypes,
   JODrops,
   JOStages,
   MatrixTypes,
   PerItemCount,
-} from "../types/joint-ops";
-import { RootState } from "./store";
+} from '../types/joint-ops';
+import { RootState } from './store';
 
 export enum HistoryChangeType {
-  CHEST_OPEN = "opened_chest",
-  ITEM_DROP = "item_drop",
+  CHEST_OPEN = 'opened_chest',
+  ITEM_DROP = 'item_drop',
 }
 
 type HistoryChestOpen = {
@@ -107,7 +108,7 @@ const types = [
 ];
 
 export const stateSlice = createSlice({
-  name: "state",
+  name: 'state',
   initialState,
   reducers: {
     openChest: (
@@ -131,7 +132,7 @@ export const stateSlice = createSlice({
       } else {
         state.joCounts[selectedStage] = {
           counts: Object.fromEntries(
-            types.map((t) => [t, { currentPity: getPity(t, realChipEnabled) }])
+            types.map(t => [t, { currentPity: getPity(t, realChipEnabled) }])
           ) as PerItemCount,
         };
       }
@@ -198,7 +199,7 @@ export const stateSlice = createSlice({
       state.changeHistory = action.payload.changeHistory;
       state.joCounts = action.payload.joCounts;
     },
-    clearHistory: (state) => {
+    clearHistory: state => {
       state.changeHistory = [];
     },
     removeSpecificHistory: (state, action: PayloadAction<number>) => {

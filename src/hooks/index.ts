@@ -1,8 +1,9 @@
-import { useMantineTheme } from "@mantine/core";
-import { useEffect, useState } from "react";
-import { selectSettings, settingsActions } from "../redux/settingsSlice";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { GearTypes, JODrops, MatrixTypes } from "../types/joint-ops";
+import { useMantineTheme } from '@mantine/core';
+import { useEffect, useState } from 'react';
+
+import { selectSettings, settingsActions } from '../redux/settingsSlice';
+import { useAppDispatch, useAppSelector } from '../redux/store';
+import { GearTypes, JODrops, MatrixTypes } from '../types/joint-ops';
 
 export const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState<{
@@ -21,10 +22,10 @@ export const useWindowSize = () => {
       });
     };
 
-    window.addEventListener("resize", handleResize);
+    window.addEventListener('resize', handleResize);
     handleResize();
 
-    return () => window.removeEventListener("resize", handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return windowSize;
