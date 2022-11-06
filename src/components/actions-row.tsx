@@ -22,7 +22,7 @@ import { JOStages } from '../types/joint-ops';
 import { SettingsMenu } from './settings-menu';
 
 const COMPACT_MENU_BREAKPOINT = 680;
-const SEPARATE_BUTTON_BREAKPOINT = 435;
+const SEPARATE_BUTTON_BREAKPOINT = 440;
 
 export const ActionsRow: FC = () => {
   const dispatch = useAppDispatch();
@@ -64,7 +64,7 @@ export const ActionsRow: FC = () => {
           transitionDuration={120}
           maxDropdownHeight={Math.max(Math.min(height - 100, 280), 100)}
           sx={{
-            width: isCompactMenu ? 90 : 230,
+            width: isCompactMenu ? 100 : 230,
             transition: 'width .3s ease-in-out',
           }}
         />
