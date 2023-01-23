@@ -5,6 +5,7 @@ import {
   MatrixTypes,
   PerChestRates,
   PerItemRates,
+  SharedDropPools,
 } from '../types/joint-ops';
 
 const buildRates = (
@@ -13,7 +14,8 @@ const buildRates = (
   c3: number,
   sfs?: number,
   sfe?: number,
-  sfr?: number
+  sfr?: number,
+  dropPool?: SharedDropPools
 ): PerChestRates => ({
   chests: [c1, c2, c3],
   specialFall:
@@ -24,6 +26,7 @@ const buildRates = (
           rate: sfr,
         }
       : undefined,
+  dropPool,
 });
 
 const NO_CHANCE = buildRates(0, 0, 0);
@@ -108,8 +111,24 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
     [GearTypes.Gold]: buildRates(1.85, 3.35, 7.1, 1, 3, 12.39),
     [MatrixTypes.Blue]: NO_CHANCE,
     [MatrixTypes.Green]: NO_CHANCE,
-    [MatrixTypes.Purple]: buildRates(0, 0.66, 2.33, 2, 7, 6.33),
-    [MatrixTypes.Gold]: buildRates(0, 0.14, 0.49, 8, 33, 1.33),
+    [MatrixTypes.Purple]: buildRates(
+      0,
+      0.66,
+      2.33,
+      2,
+      7,
+      6.33,
+      SharedDropPools.PURPLE_MATRIX_SHARED_8_TO_12
+    ),
+    [MatrixTypes.Gold]: buildRates(
+      0,
+      0.14,
+      0.49,
+      8,
+      33,
+      1.33,
+      SharedDropPools.GOLD_MATRIX_SHARED_8_TO_12
+    ),
   },
   [JOStages.HARD_I]: {
     [GearTypes.Blue]: NO_CHANCE,
@@ -118,8 +137,24 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
     [GearTypes.Gold]: buildRates(1.85, 3.35, 7.1, 1, 3, 12.39),
     [MatrixTypes.Blue]: NO_CHANCE,
     [MatrixTypes.Green]: NO_CHANCE,
-    [MatrixTypes.Purple]: buildRates(0, 0.66, 2.33, 2, 7, 6.33),
-    [MatrixTypes.Gold]: buildRates(0, 0.14, 0.49, 8, 33, 1.33),
+    [MatrixTypes.Purple]: buildRates(
+      0,
+      0.66,
+      2.33,
+      2,
+      7,
+      6.33,
+      SharedDropPools.PURPLE_MATRIX_SHARED_8_TO_12
+    ),
+    [MatrixTypes.Gold]: buildRates(
+      0,
+      0.14,
+      0.49,
+      8,
+      33,
+      1.33,
+      SharedDropPools.GOLD_MATRIX_SHARED_8_TO_12
+    ),
   },
   [JOStages.HARD_II]: {
     [GearTypes.Blue]: NO_CHANCE,
@@ -128,8 +163,102 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
     [GearTypes.Gold]: buildRates(2.27, 4.1, 8.68, 1, 3, 15.14),
     [MatrixTypes.Blue]: NO_CHANCE,
     [MatrixTypes.Green]: NO_CHANCE,
-    [MatrixTypes.Purple]: buildRates(0, 0.66, 2.33, 2, 7, 6.33),
-    [MatrixTypes.Gold]: buildRates(0, 0.14, 0.49, 8, 33, 1.33),
+    [MatrixTypes.Purple]: buildRates(
+      0,
+      0.66,
+      2.33,
+      2,
+      7,
+      6.33,
+      SharedDropPools.PURPLE_MATRIX_SHARED_8_TO_12
+    ),
+    [MatrixTypes.Gold]: buildRates(
+      0,
+      0.14,
+      0.49,
+      8,
+      33,
+      1.33,
+      SharedDropPools.GOLD_MATRIX_SHARED_8_TO_12
+    ),
+  },
+  [JOStages.HARD_II]: {
+    [GearTypes.Blue]: NO_CHANCE,
+    [GearTypes.Green]: NO_CHANCE,
+    [GearTypes.Purple]: buildRates(33.33, 33.33, 33.33),
+    [GearTypes.Gold]: buildRates(2.27, 4.1, 8.68, 1, 3, 15.14),
+    [MatrixTypes.Blue]: NO_CHANCE,
+    [MatrixTypes.Green]: NO_CHANCE,
+    [MatrixTypes.Purple]: buildRates(
+      0,
+      0.66,
+      2.33,
+      2,
+      7,
+      6.33,
+      SharedDropPools.PURPLE_MATRIX_SHARED_8_TO_12
+    ),
+    [MatrixTypes.Gold]: buildRates(
+      0,
+      0.14,
+      0.49,
+      8,
+      33,
+      1.33,
+      SharedDropPools.GOLD_MATRIX_SHARED_8_TO_12
+    ),
+  },
+  [JOStages.HARD_IV]: {
+    [GearTypes.Blue]: NO_CHANCE,
+    [GearTypes.Green]: NO_CHANCE,
+    [GearTypes.Purple]: buildRates(-1, -1, -1),
+    [GearTypes.Gold]: buildRates(-1, -1, -1),
+    [MatrixTypes.Blue]: NO_CHANCE,
+    [MatrixTypes.Green]: NO_CHANCE,
+    [MatrixTypes.Purple]: buildRates(
+      -1,
+      -1,
+      -1,
+      undefined,
+      undefined,
+      undefined,
+      SharedDropPools.PURPLE_MATRIX_SHARED_8_TO_12
+    ),
+    [MatrixTypes.Gold]: buildRates(
+      -1,
+      -1,
+      -1,
+      undefined,
+      undefined,
+      undefined,
+      SharedDropPools.GOLD_MATRIX_SHARED_8_TO_12
+    ),
+  },
+  [JOStages.HARD_III]: {
+    [GearTypes.Blue]: NO_CHANCE,
+    [GearTypes.Green]: NO_CHANCE,
+    [GearTypes.Purple]: buildRates(-1, -1, -1),
+    [GearTypes.Gold]: buildRates(-1, -1, -1),
+    [MatrixTypes.Blue]: NO_CHANCE,
+    [MatrixTypes.Green]: NO_CHANCE,
+    [MatrixTypes.Purple]: buildRates(
+      -1,
+      -1,
+      -1,
+      undefined,
+      undefined,
+      undefined,
+      SharedDropPools.PURPLE_MATRIX_SHARED_8_TO_12
+    ),
+    [MatrixTypes.Gold]: buildRates(
+      -1,
+      -1,
+      -1,
+      undefined,
+      undefined,
+      undefined,
+      SharedDropPools.GOLD_MATRIX_SHARED_8_TO_12
+    ),
   },
 };
 
@@ -142,8 +271,10 @@ export const JOINT_OPS_NAMES: Record<JOStages, [string, string]> = {
   [JOStages.VI]: ['Joint Operation VI (Lv. 50)', 'VI'],
   [JOStages.VII]: ['Joint Operation VII (Lv. 60)', 'VII'],
   [JOStages.VIII]: ['Joint Operation VIII (Lv. 70)', 'VIII'],
-  [JOStages.HARD_I]: ['Joint Operation HARD I (Lv. 75)', 'HARD I'],
-  [JOStages.HARD_II]: ['Joint Operation HARD II (Lv. 80)', 'HARD II'],
+  [JOStages.HARD_I]: ['Joint Operation VERA I (Lv. 75)', 'VERA I'],
+  [JOStages.HARD_II]: ['Joint Operation VERA II (Lv. 80)', 'VERA II'],
+  [JOStages.HARD_III]: ['Joint Operation VERA III (Lv. ?)', 'VERA III'],
+  [JOStages.HARD_IV]: ['Joint Operation VERA IV (Lv. ?)', 'VERA IV'],
 };
 
 export const DROPS_NAMES: Record<JODrops, string> = {
