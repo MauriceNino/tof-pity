@@ -2,7 +2,7 @@ import { useMantineTheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import { selectSettings, settingsActions } from '../redux/settingsSlice';
-import { stateActions } from '../redux/stateSlice';
+import { selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { GearTypes, JODrops, MatrixTypes } from '../types/joint-ops';
 
@@ -63,6 +63,7 @@ export const useDropTableOrder = (respectSettings = true) => {
 export const useVersionMigrations = () => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector(selectSettings);
+  const state = useAppSelector(selectState);
 
   useEffect(() => {
     if (settings.compactLayout == null) {
@@ -78,8 +79,11 @@ export const useVersionMigrations = () => {
 
   useEffect(() => {
     if (settings.version == null) {
-      dispatch(stateActions.migrateHistoryToV1());
       dispatch(settingsActions.changeSetting({ version: 1 }));
     }
-  }, []);
+
+    if (state.version == null) {
+      dispatch(stateActions.migrateHistoryToV1());
+    }
+  }, [settings.version, state.version]);
 };

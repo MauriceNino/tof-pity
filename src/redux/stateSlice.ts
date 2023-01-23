@@ -46,6 +46,7 @@ export type State = {
   >;
   changeHistory: History[];
   currentChips: number | null;
+  version: number;
 };
 
 export const historyIsChestOpen = (
@@ -60,6 +61,7 @@ const initialState: State = {
   joCounts: {},
   changeHistory: [],
   currentChips: null,
+  version: 1,
 };
 
 const getPity = (type: JODrops, chipEnabled: boolean) => {
@@ -241,6 +243,7 @@ export const stateSlice = createSlice({
     overrideState: (state, action: PayloadAction<State>) => {
       state.changeHistory = action.payload.changeHistory;
       state.joCounts = action.payload.joCounts;
+      state.version = action.payload.version;
     },
     clearHistory: state => {
       state.changeHistory = [];
@@ -281,6 +284,8 @@ export const stateSlice = createSlice({
           }
         });
       });
+
+      state.version = 1;
     },
   },
 });

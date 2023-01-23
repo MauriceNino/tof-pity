@@ -17,14 +17,14 @@ export type SettingsState = {
 };
 
 const initialState: SettingsState = {
-  selectedStage: JOStages.VII,
+  selectedStage: JOStages.HARD_II,
   chipEnabled: true,
   goldEnabled: true,
   purpleEnabled: true,
   blueEnabled: true,
   greenEnabled: true,
   compactLayout: true,
-  chipCounter: false,
+  chipCounter: true,
   chipCounterWarning: true,
   version: 1,
 };
