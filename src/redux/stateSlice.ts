@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { WritableDraft } from 'immer/dist/internal';
 import moment from 'moment';
 
 import { JOINT_OPS_RATES, SUPPLY_CHIP_BEHAVIOR } from '../constants/joint-ops';
@@ -67,35 +68,63 @@ const getPity = (type: JODrops, chipEnabled: boolean) => {
   return chipEnabled ? behavior.withChip : behavior.withoutChip;
 };
 
+const getSharedPoolsForStage = (stage: JOStages) => {
+  return Object.entries(JOINT_OPS_RATES[stage]).reduce(
+    (acc, [item, { dropPool }]) => {
+      if (dropPool != null) {
+        acc.push({
+          item: item as JODrops,
+          dropPool,
+        });
+      }
+      return acc;
+    },
+    [] as { item: JODrops; dropPool: SharedDropPools }[]
+  );
+};
+
+const getStagesForPool = (dropPool: SharedDropPools) => {
+  return Object.entries(JOINT_OPS_RATES)
+    .filter(([stage, items]) =>
+      Object.entries(items).some(([, rates]) => rates.dropPool === dropPool)
+    )
+    .map(([stage]) => stage as JOStages);
+};
+
 const addToAll = (
-  stage: PerItemCount,
+  state: WritableDraft<State>,
+  stage: JOStages,
   chests: number,
   chipEnabled: boolean
 ) => {
-  stage[GearTypes.Gold].currentPity =
-    stage[GearTypes.Gold].currentPity +
-    chests * getPity(GearTypes.Gold, chipEnabled);
-  stage[GearTypes.Purple].currentPity =
-    stage[GearTypes.Purple].currentPity +
-    chests * getPity(GearTypes.Purple, chipEnabled);
-  stage[GearTypes.Blue].currentPity =
-    stage[GearTypes.Blue].currentPity +
-    chests * getPity(GearTypes.Blue, chipEnabled);
-  stage[GearTypes.Green].currentPity =
-    stage[GearTypes.Green].currentPity +
-    chests * getPity(GearTypes.Green, chipEnabled);
-  stage[MatrixTypes.Gold].currentPity =
-    stage[MatrixTypes.Gold].currentPity +
-    chests * getPity(MatrixTypes.Gold, chipEnabled);
-  stage[MatrixTypes.Purple].currentPity =
-    stage[MatrixTypes.Purple].currentPity +
-    chests * getPity(MatrixTypes.Purple, chipEnabled);
-  stage[MatrixTypes.Blue].currentPity =
-    stage[MatrixTypes.Blue].currentPity +
-    chests * getPity(MatrixTypes.Blue, chipEnabled);
-  stage[MatrixTypes.Green].currentPity =
-    stage[MatrixTypes.Green].currentPity +
-    chests * getPity(MatrixTypes.Green, chipEnabled);
+  const pools = getSharedPoolsForStage(stage);
+
+  pools.forEach(({ item: dpItem, dropPool }) => {
+    const dpStages = getStagesForPool(dropPool);
+    dpStages.forEach(dpStage => {
+      if (state.joCounts[dpStage] == null) {
+        state.joCounts[dpStage] = {
+          counts: Object.fromEntries(
+            types.map(t => [t, { currentPity: 0 }])
+          ) as PerItemCount,
+        };
+      }
+
+      Object.entries(state.joCounts[dpStage]!.counts).forEach(
+        ([item, pity]) => {
+          if (dpStage !== stage && item === dpItem) {
+            pity.currentPity =
+              pity.currentPity + chests * getPity(item as JODrops, chipEnabled);
+          }
+        }
+      );
+    });
+  });
+
+  Object.entries(state.joCounts[stage]!.counts).forEach(([item, pity]) => {
+    pity.currentPity =
+      pity.currentPity + chests * getPity(item as JODrops, chipEnabled);
+  });
 };
 
 const types = [
@@ -123,21 +152,11 @@ export const stateSlice = createSlice({
         chipEnabled: boolean;
       }>
     ) => {
-      const stage = state.joCounts[selectedStage];
-
       const realChipEnabled = chipCounter
         ? state.currentChips != null && state.currentChips > 0
         : chipEnabled;
 
-      if (stage != null) {
-        addToAll(stage.counts, 1, realChipEnabled);
-      } else {
-        state.joCounts[selectedStage] = {
-          counts: Object.fromEntries(
-            types.map(t => [t, { currentPity: getPity(t, realChipEnabled) }])
-          ) as PerItemCount,
-        };
-      }
+      addToAll(state, selectedStage, 1, realChipEnabled);
 
       if (chipCounter && state.currentChips != null && state.currentChips > 0) {
         state.currentChips = state.currentChips - 1;
@@ -161,15 +180,30 @@ export const stateSlice = createSlice({
     ) => {
       const stage = state.joCounts[selectedStage];
       if (stage) {
+        const { dropPool } = JOINT_OPS_RATES[selectedStage][drop];
+
         state.changeHistory.push({
           type: HistoryChangeType.ITEM_DROP,
           stage: selectedStage,
           item: drop,
           pity: stage.counts[drop].currentPity,
           ts: moment().valueOf(),
+          dropPool,
         });
 
-        stage.counts[drop].currentPity = 0;
+        if (dropPool) {
+          Object.entries(state.joCounts).forEach(([stage, { counts }]) => {
+            Object.entries(counts).forEach(([item, pity]) => {
+              const current =
+                JOINT_OPS_RATES[stage as JOStages][item as JODrops];
+              if (current.dropPool === dropPool) {
+                pity.currentPity = 0;
+              }
+            });
+          });
+        } else {
+          stage.counts[drop].currentPity = 0;
+        }
       }
     },
     goBackHistory: (
@@ -182,18 +216,25 @@ export const stateSlice = createSlice({
     ) => {
       const lastHistory = state.changeHistory.pop();
       if (lastHistory) {
-        const stage = state.joCounts[lastHistory.stage];
-
-        if (historyIsChestOpen(lastHistory) && stage) {
-          addToAll(stage.counts, -1, lastHistory.withChip);
+        if (historyIsChestOpen(lastHistory)) {
+          addToAll(state, lastHistory.stage, -1, lastHistory.withChip);
 
           if (lastHistory.withChip && chipCounter) {
             state.currentChips =
               state.currentChips == null ? 1 : state.currentChips + 1;
           }
         }
-        if (historyIsItemDrop(lastHistory) && stage) {
-          stage.counts[lastHistory.item].currentPity = lastHistory.pity;
+        if (historyIsItemDrop(lastHistory)) {
+          if (lastHistory.dropPool) {
+            getStagesForPool(lastHistory.dropPool).forEach(stage => {
+              state.joCounts[stage]!.counts[lastHistory.item].currentPity =
+                lastHistory.pity;
+            });
+          } else {
+            state.joCounts[lastHistory.stage]!.counts[
+              lastHistory.item
+            ].currentPity = lastHistory.pity;
+          }
         }
       }
     },
@@ -213,22 +254,9 @@ export const stateSlice = createSlice({
     migrateHistoryToV1: state => {
       const pityCountInPool: Partial<Record<SharedDropPools, number>> = {};
 
-      state.changeHistory.forEach((curr, i) => {
+      state.changeHistory.forEach(curr => {
         if (historyIsChestOpen(curr)) {
-          const dropPools = Object.entries(JOINT_OPS_RATES[curr.stage]).reduce(
-            (acc, [item, { dropPool }]) => {
-              if (dropPool != null) {
-                acc.push({
-                  item: item as JODrops,
-                  dropPool,
-                });
-              }
-              return acc;
-            },
-            [] as { item: JODrops; dropPool: SharedDropPools }[]
-          );
-
-          dropPools.forEach(({ item, dropPool }) => {
+          getSharedPoolsForStage(curr.stage).forEach(({ item, dropPool }) => {
             pityCountInPool[dropPool] =
               (pityCountInPool[dropPool] ?? 0) + getPity(item, curr.withChip);
           });
