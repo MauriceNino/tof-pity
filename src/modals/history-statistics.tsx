@@ -120,8 +120,7 @@ export const HistoryStatistics: FC = () => {
                         <td>{averageDrops.toFixed(1)}</td>
                         <td
                           style={{
-                            color:
-                              diff >= 100 ? colors.green[3] : colors.red[3],
+                            color: diff >= 0 ? colors.green[3] : colors.red[3],
                           }}
                         >
                           {diff.toFixed(1)} %
