@@ -2,6 +2,7 @@ import { useMantineTheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import { selectSettings, settingsActions } from '../redux/settingsSlice';
+import { stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { GearTypes, JODrops, MatrixTypes } from '../types/joint-ops';
 
@@ -72,6 +73,13 @@ export const useVersionMigrations = () => {
     }
     if (settings.chipCounterWarning == null) {
       dispatch(settingsActions.changeSetting({ chipCounterWarning: true }));
+    }
+  }, []);
+
+  useEffect(() => {
+    if (settings.version == null) {
+      dispatch(stateActions.migrateHistoryToV1());
+      dispatch(settingsActions.changeSetting({ version: 1 }));
     }
   }, []);
 };

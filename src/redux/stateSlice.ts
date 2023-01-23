@@ -1,13 +1,14 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import moment from 'moment';
 
-import { SUPPLY_CHIP_BEHAVIOR } from '../constants/joint-ops';
+import { JOINT_OPS_RATES, SUPPLY_CHIP_BEHAVIOR } from '../constants/joint-ops';
 import {
   GearTypes,
   JODrops,
   JOStages,
   MatrixTypes,
   PerItemCount,
+  SharedDropPools,
 } from '../types/joint-ops';
 import { RootState } from './store';
 
@@ -25,6 +26,7 @@ type HistoryChestOpen = {
 type HistoryItemDrop = {
   type: HistoryChangeType.ITEM_DROP;
   stage: JOStages;
+  dropPool?: SharedDropPools;
   item: GearTypes | MatrixTypes;
   pity: number;
   ts: number;
@@ -207,6 +209,50 @@ export const stateSlice = createSlice({
     },
     setChipCounter: (state, action: PayloadAction<number | null>) => {
       state.currentChips = action.payload;
+    },
+    migrateHistoryToV1: state => {
+      const pityCountInPool: Partial<Record<SharedDropPools, number>> = {};
+
+      state.changeHistory.forEach((curr, i) => {
+        if (historyIsChestOpen(curr)) {
+          const dropPools = Object.entries(JOINT_OPS_RATES[curr.stage]).reduce(
+            (acc, [item, { dropPool }]) => {
+              if (dropPool != null) {
+                acc.push({
+                  item: item as JODrops,
+                  dropPool,
+                });
+              }
+              return acc;
+            },
+            [] as { item: JODrops; dropPool: SharedDropPools }[]
+          );
+
+          dropPools.forEach(({ item, dropPool }) => {
+            pityCountInPool[dropPool] =
+              (pityCountInPool[dropPool] ?? 0) + getPity(item, curr.withChip);
+          });
+        }
+        if (historyIsItemDrop(curr)) {
+          const { dropPool } = JOINT_OPS_RATES[curr.stage][curr.item];
+
+          if (dropPool != null) {
+            curr.dropPool = dropPool;
+            curr.pity = pityCountInPool[dropPool] ?? 0;
+            pityCountInPool[dropPool] = 0;
+          }
+        }
+      });
+
+      Object.entries(state.joCounts).forEach(([stage, { counts }]) => {
+        Object.entries(counts).forEach(([item, pity]) => {
+          const { dropPool } =
+            JOINT_OPS_RATES[stage as JOStages][item as JODrops];
+          if (dropPool) {
+            pity.currentPity = pityCountInPool[dropPool] ?? 0;
+          }
+        });
+      });
     },
   },
 });

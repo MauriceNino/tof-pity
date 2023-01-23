@@ -13,6 +13,7 @@ export type SettingsState = {
   compactLayout: boolean;
   chipCounter: boolean;
   chipCounterWarning: boolean;
+  version: number;
 };
 
 const initialState: SettingsState = {
@@ -25,6 +26,7 @@ const initialState: SettingsState = {
   compactLayout: true,
   chipCounter: false,
   chipCounterWarning: true,
+  version: 1,
 };
 
 export const settingsSlice = createSlice({
