@@ -8,6 +8,7 @@ import {
   JODrops,
   JOStages,
   MatrixTypes,
+  PerChestRates,
   PerItemCount,
   SharedDropPools,
 } from '../types/joint-ops';
@@ -87,11 +88,35 @@ const getSharedPoolsForStage = (stage: JOStages) => {
 
 const getStagesForPool = (dropPool: SharedDropPools) => {
   return Object.entries(JOINT_OPS_RATES)
-    .filter(([stage, items]) =>
-      Object.entries(items).some(([, rates]) => rates.dropPool === dropPool)
+    .filter(([, items]) =>
+      Object.values(items).some(rates => rates.dropPool === dropPool)
     )
     .map(([stage]) => stage as JOStages);
 };
+
+const forEachPoolPity = (
+  counts: WritableDraft<State['joCounts']>,
+  fn: (pity: WritableDraft<PerItemCount[JODrops]>, rates: PerChestRates) => void
+) => {
+  Object.entries(counts).forEach(([stage, { counts }]) => {
+    Object.entries(counts).forEach(([item, pity]) => {
+      const rates = JOINT_OPS_RATES[stage as JOStages][item as JODrops];
+
+      fn(pity, rates);
+    });
+  });
+};
+
+const ALL_DROPS = [
+  GearTypes.Gold,
+  MatrixTypes.Gold,
+  GearTypes.Purple,
+  MatrixTypes.Purple,
+  GearTypes.Blue,
+  MatrixTypes.Blue,
+  GearTypes.Green,
+  MatrixTypes.Green,
+];
 
 const addToAll = (
   state: WritableDraft<State>,
@@ -103,15 +128,18 @@ const addToAll = (
 
   pools.forEach(({ item: dpItem, dropPool }) => {
     const dpStages = getStagesForPool(dropPool);
+
     dpStages.forEach(dpStage => {
+      // Set all pity to 0 if not initialized
       if (state.joCounts[dpStage] == null) {
         state.joCounts[dpStage] = {
           counts: Object.fromEntries(
-            types.map(t => [t, { currentPity: 0 }])
+            ALL_DROPS.map(t => [t, { currentPity: 0 }])
           ) as PerItemCount,
         };
       }
 
+      // Set pity for pools that are affected in all except the current stage
       Object.entries(state.joCounts[dpStage]!.counts).forEach(
         ([item, pity]) => {
           if (dpStage !== stage && item === dpItem) {
@@ -123,22 +151,12 @@ const addToAll = (
     });
   });
 
+  // Set pity for all items in current stage
   Object.entries(state.joCounts[stage]!.counts).forEach(([item, pity]) => {
     pity.currentPity =
       pity.currentPity + chests * getPity(item as JODrops, chipEnabled);
   });
 };
-
-const types = [
-  GearTypes.Gold,
-  MatrixTypes.Gold,
-  GearTypes.Purple,
-  MatrixTypes.Purple,
-  GearTypes.Blue,
-  MatrixTypes.Blue,
-  GearTypes.Green,
-  MatrixTypes.Green,
-];
 
 export const stateSlice = createSlice({
   name: 'state',
@@ -194,14 +212,10 @@ export const stateSlice = createSlice({
         });
 
         if (dropPool) {
-          Object.entries(state.joCounts).forEach(([stage, { counts }]) => {
-            Object.entries(counts).forEach(([item, pity]) => {
-              const current =
-                JOINT_OPS_RATES[stage as JOStages][item as JODrops];
-              if (current.dropPool === dropPool) {
-                pity.currentPity = 0;
-              }
-            });
+          forEachPoolPity(state.joCounts, (pity, rates) => {
+            if (rates.dropPool === dropPool) {
+              pity.currentPity = 0;
+            }
           });
         } else {
           stage.counts[drop].currentPity = 0;
@@ -275,14 +289,10 @@ export const stateSlice = createSlice({
         }
       });
 
-      Object.entries(state.joCounts).forEach(([stage, { counts }]) => {
-        Object.entries(counts).forEach(([item, pity]) => {
-          const { dropPool } =
-            JOINT_OPS_RATES[stage as JOStages][item as JODrops];
-          if (dropPool) {
-            pity.currentPity = pityCountInPool[dropPool] ?? 0;
-          }
-        });
+      forEachPoolPity(state.joCounts, (pity, { dropPool }) => {
+        if (dropPool) {
+          pity.currentPity = pityCountInPool[dropPool] ?? 0;
+        }
       });
 
       state.version = 1;
