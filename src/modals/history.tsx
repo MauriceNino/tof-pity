@@ -148,7 +148,7 @@ export const HistoryModal: FC<{ opened: boolean; close: () => void }> = ({
             </Tooltip>
           </Group>
 
-          <Accordion defaultValue='statistics'>
+          <Accordion defaultValue='timeline'>
             <Accordion.Item value='statistics'>
               <Accordion.Control>Statistics</Accordion.Control>
               <Accordion.Panel>

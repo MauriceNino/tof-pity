@@ -1,8 +1,10 @@
 import {
   Button,
+  Checkbox,
   createStyles,
   Table,
   Text,
+  Tooltip,
   useMantineTheme,
 } from '@mantine/core';
 import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
@@ -20,7 +22,7 @@ import { useAppDispatch, useAppSelector } from '../redux/store';
 import { JODrops, PerChestRates } from '../types/joint-ops';
 import { itemToColor } from '../util/util';
 
-const CHEST_SHOW_BREAKPOINT = 565;
+const CHEST_SHOW_BREAKPOINT = 640;
 
 const getDropsChance = (
   rates: PerChestRates,
@@ -69,6 +71,8 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   const counts = state.joCounts[selectedStage]?.counts?.[item];
   const currentPity = counts?.currentPity ?? 0;
 
+  const doubleDrop = state.doubleDrop[selectedStage]?.[item];
+
   return (
     <motion.tr
       key={item}
@@ -115,6 +119,20 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
         )}
       </td>
       <td>
+        <Checkbox
+          style={{ marginLeft: '25%' }}
+          checked={doubleDrop}
+          onChange={() =>
+            dispatch(
+              stateActions.flipDoubleDrop({
+                stage: selectedStage,
+                item,
+              })
+            )
+          }
+        />
+      </td>
+      <td>
         <Button
           variant={currentPity === 0 ? 'subtle' : 'light'}
           onClick={() =>
@@ -137,12 +155,32 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
 };
 
 const TABLE_HEADINGS = [
-  '',
-  'Chest #1',
-  'Chest #2',
-  'Chest #3',
-  'Current Pity',
-  '',
+  { text: '' },
+  {
+    text: 'Chest #1',
+    description: 'Chance of pulling the item on the next chest.',
+  },
+  {
+    text: 'Chest #2',
+    description: 'Chance of pulling the item on the next chest.',
+  },
+  {
+    text: 'Chest #3',
+    description: 'Chance of pulling the item on the next chest.',
+  },
+  {
+    text: 'Pity',
+    description:
+      'The current pity for this item compared to the expected max pity where a guaranteed drop will happen.',
+  },
+  {
+    text: 'Double Drop',
+    description:
+      'When there is a double drop event for this item, please check this box. Normally this will automatically check itself, if there is an event going on.',
+  },
+  {
+    text: '',
+  },
 ];
 
 export const OutputTable: FC = () => {
@@ -151,8 +189,8 @@ export const OutputTable: FC = () => {
   const { width } = useWindowSize();
   const isCompactTable = width < CHEST_SHOW_BREAKPOINT && compactLayout;
 
-  const headings = TABLE_HEADINGS.map((h, i) => [h, i] as const).filter(
-    ([_, i]) => !isCompactTable || [0, 4, 5].includes(i)
+  const headings = TABLE_HEADINGS.filter(
+    (_, i) => !isCompactTable || [0, 4, 5, 6].includes(i)
   );
 
   return (
@@ -161,9 +199,22 @@ export const OutputTable: FC = () => {
         <thead>
           <tr>
             <AnimatePresence>
-              {headings.map(([h, i]) => (
-                <motion.th key={i} layout>
-                  {h}
+              {headings.map((h, i) => (
+                <motion.th key={`heading_${i}`} layout>
+                  {h.description ? (
+                    <Tooltip
+                      multiline
+                      width={280}
+                      withArrow
+                      position='bottom'
+                      transition='fade'
+                      label={h.description}
+                    >
+                      <span>{h.text}</span>
+                    </Tooltip>
+                  ) : (
+                    h.text
+                  )}
                 </motion.th>
               ))}
             </AnimatePresence>
