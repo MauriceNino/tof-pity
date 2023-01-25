@@ -133,22 +133,33 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
         />
       </td>
       <td>
-        <Button
-          variant={currentPity === 0 ? 'subtle' : 'light'}
-          onClick={() =>
-            dispatch(
-              stateActions.registerDrop({
-                drop: item,
-                selectedStage,
-              })
-            )
+        <Tooltip
+          multiline
+          width={350}
+          withArrow
+          position='left'
+          transition='fade'
+          label={
+            'If your chest dropped the item, click this button to indicate a drop. If you have gotten two drops, you can click the button twice.'
           }
-          sx={{
-            '&[data-disabled]': { color: colors.gray[6] },
-          }}
         >
-          Drop
-        </Button>
+          <Button
+            variant={currentPity === 0 ? 'subtle' : 'light'}
+            onClick={() =>
+              dispatch(
+                stateActions.registerDrop({
+                  drop: item,
+                  selectedStage,
+                })
+              )
+            }
+            sx={{
+              '&[data-disabled]': { color: colors.gray[6] },
+            }}
+          >
+            Drop
+          </Button>
+        </Tooltip>
       </td>
     </motion.tr>
   );
