@@ -1,5 +1,4 @@
 import {
-  Accordion,
   Button,
   FileButton,
   Group,
@@ -19,7 +18,6 @@ import { FC, useEffect, useState } from 'react';
 import { selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { ConfirmModal } from './confirm';
-import { HistoryStatistics } from './history-statistics';
 import { HistoryTimeline } from './history-timeline';
 
 const downloadJSON = (filename: string, content: string) => {
@@ -148,23 +146,7 @@ export const HistoryModal: FC<{ opened: boolean; close: () => void }> = ({
             </Tooltip>
           </Group>
 
-          <Accordion defaultValue='timeline'>
-            <Accordion.Item value='statistics'>
-              <Accordion.Control>Statistics</Accordion.Control>
-              <Accordion.Panel>
-                <HistoryStatistics />
-              </Accordion.Panel>
-            </Accordion.Item>
-
-            <Accordion.Item value='timeline'>
-              <Accordion.Control disabled={state.changeHistory.length === 0}>
-                Timeline
-              </Accordion.Control>
-              <Accordion.Panel>
-                <HistoryTimeline />
-              </Accordion.Panel>
-            </Accordion.Item>
-          </Accordion>
+          <HistoryTimeline />
         </Stack>
       </Modal>
 
