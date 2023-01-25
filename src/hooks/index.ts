@@ -75,6 +75,9 @@ export const useVersionMigrations = () => {
     if (settings.chipCounterWarning == null) {
       dispatch(settingsActions.changeSetting({ chipCounterWarning: true }));
     }
+    if (settings.countChestAsOnePity == null) {
+      dispatch(settingsActions.changeSetting({ countChestAsOnePity: true }));
+    }
   }, []);
 
   useEffect(() => {

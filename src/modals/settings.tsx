@@ -32,13 +32,14 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
     compactLayout,
     chipCounter,
     chipCounterWarning,
+    countChestAsOnePity,
   } = useAppSelector(selectSettings);
 
   const changeSetting = <T extends keyof SettingsState>(
     key: T,
     value: SettingsState[T]
   ) => dispatch(settingsActions.changeSetting({ [key]: value }));
-  const { colors, spacing } = useMantineTheme();
+  const { colors } = useMantineTheme();
 
   return (
     <Modal
@@ -71,26 +72,38 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
                 onChange={() => changeSetting('chipCounter', !chipCounter)}
               />
             </Group>
+            <AnimatePresence>
+              {chipCounter && (
+                <MotionGroup
+                  style={{ overflow: 'hidden' }}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{
+                    height: 'auto',
+                    opacity: 1,
+                  }}
+                  exit={{ height: 0, opacity: 0 }}
+                  position='apart'
+                >
+                  <Text>JO-Chip Counter Warning</Text>
+                  <Switch
+                    checked={chipCounterWarning}
+                    onChange={() =>
+                      changeSetting('chipCounterWarning', !chipCounterWarning)
+                    }
+                  />
+                </MotionGroup>
+              )}
+            </AnimatePresence>
+            <Group position='apart'>
+              <Text>Count Chest as 1 Pity</Text>
+              <Switch
+                checked={countChestAsOnePity}
+                onChange={() =>
+                  changeSetting('countChestAsOnePity', !countChestAsOnePity)
+                }
+              />
+            </Group>
           </Stack>
-          <AnimatePresence>
-            {chipCounter && (
-              <MotionGroup
-                style={{ overflow: 'hidden' }}
-                initial={{ height: 0, marginTop: 0, opacity: 0 }}
-                animate={{ height: 'auto', marginTop: spacing.xs, opacity: 1 }}
-                exit={{ height: 0, marginTop: 0, opacity: 0 }}
-                position='apart'
-              >
-                <Text>JO-Chip Counter Warning</Text>
-                <Switch
-                  checked={chipCounterWarning}
-                  onChange={() =>
-                    changeSetting('chipCounterWarning', !chipCounterWarning)
-                  }
-                />
-              </MotionGroup>
-            )}
-          </AnimatePresence>
         </Box>
 
         <Stack spacing='xs'>

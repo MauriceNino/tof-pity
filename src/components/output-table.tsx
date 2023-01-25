@@ -3,7 +3,6 @@ import {
   Checkbox,
   createStyles,
   Table,
-  Text,
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
@@ -21,6 +20,7 @@ import { selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { JODrops, PerChestRates } from '../types/joint-ops';
 import { itemToColor } from '../util/util';
+import { CurrentPityOutput } from './current-pity-output';
 
 const CHEST_SHOW_BREAKPOINT = 640;
 
@@ -34,7 +34,7 @@ const getDropsChance = (
   }
 
   const isSpecialFall =
-    rates.specialFall && currentPity >= rates.specialFall.start;
+    rates.specialFall && currentPity >= rates.specialFall.value;
 
   const rate =
     rates.chests[chest] + (isSpecialFall ? rates.specialFall!.rate : 0);
@@ -50,6 +50,9 @@ const useStyles = createStyles((t, _, getRef) => ({
     [`.${getRef('opacity-change')}`]: {
       opacity: 0.5,
       transition: 'all .1s ease-in-out',
+    },
+    'td span': {
+      whiteSpace: 'nowrap',
     },
   },
   opacityChange: {
@@ -104,19 +107,10 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
         </>
       )}
       <td>
-        {rates.specialFall ? (
-          <>
-            <Text span weight='bold'>
-              {currentPity}
-            </Text>
-            <Text span className={classes.opacityChange}>
-              {' '}
-              / {rates.specialFall.end === -1 ? '?' : rates.specialFall.end + 1}
-            </Text>
-          </>
-        ) : (
-          currentPity
-        )}
+        <CurrentPityOutput
+          item={item}
+          opacityChangeClass={classes.opacityChange}
+        />
       </td>
       <td>
         <Checkbox

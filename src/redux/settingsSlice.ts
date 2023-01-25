@@ -13,6 +13,7 @@ export type SettingsState = {
   compactLayout: boolean;
   chipCounter: boolean;
   chipCounterWarning: boolean;
+  countChestAsOnePity: boolean;
   version: number;
 };
 
@@ -26,6 +27,7 @@ const initialState: SettingsState = {
   compactLayout: true,
   chipCounter: true,
   chipCounterWarning: true,
+  countChestAsOnePity: true,
   version: 1,
 };
 

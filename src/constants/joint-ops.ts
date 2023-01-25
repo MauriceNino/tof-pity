@@ -8,26 +8,36 @@ import {
   SharedDropPools,
 } from '../types/joint-ops';
 
+const buildSfRates = (sfv: number, sfi: number, sfr: number) => {
+  const sfrbase = 100 / sfr;
+
+  return {
+    value: sfv,
+    initial: sfi,
+    rate: sfr,
+    rangeStart: Math.floor(sfrbase - sfv) / 2,
+    rangeEnd: Math.ceil(sfrbase + sfv) / 2,
+  };
+};
+
 const buildRates = (
   c1: number,
   c2: number,
   c3: number,
-  sfs?: number,
-  sfe?: number,
+  sfv?: number,
+  sfi?: number,
   sfr?: number,
   dropPool?: SharedDropPools
-): PerChestRates => ({
-  chests: [c1, c2, c3],
-  specialFall:
-    sfs != null && sfe != null && sfr != null
-      ? {
-          start: sfs,
-          end: sfe,
-          rate: sfr,
-        }
-      : undefined,
-  dropPool,
-});
+): PerChestRates => {
+  return {
+    chests: [c1, c2, c3],
+    specialFall:
+      sfv != null && sfi != null && sfr != null
+        ? buildSfRates(sfv, sfi, sfr)
+        : undefined,
+    dropPool,
+  };
+};
 
 const NO_CHANCE = buildRates(0, 0, 0);
 export const isNoChance = (stage: JOStages, item: JODrops) =>

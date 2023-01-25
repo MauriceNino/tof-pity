@@ -35,9 +35,11 @@ export enum SharedDropPools {
 export type PerChestRates = {
   chests: [number, number, number];
   specialFall?: {
-    start: number;
-    end: number;
+    value: number;
+    initial: number;
     rate: number;
+    rangeStart: number;
+    rangeEnd: number;
   };
   dropPool?: SharedDropPools;
 };
