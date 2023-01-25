@@ -2,16 +2,21 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { WritableDraft } from 'immer/dist/internal';
 import moment from 'moment';
 
-import { JOINT_OPS_RATES, SUPPLY_CHIP_BEHAVIOR } from '../constants/joint-ops';
+import { JOINT_OPS_RATES } from '../constants/joint-ops';
 import {
   GearTypes,
   JODrops,
   JOStages,
   MatrixTypes,
-  PerChestRates,
   PerItemCount,
   SharedDropPools,
 } from '../types/joint-ops';
+import {
+  forEachPoolPity,
+  getPity,
+  getSharedPoolsForStage,
+  getStagesForPool,
+} from '../util/util';
 import { RootState } from './store';
 
 export enum HistoryChangeType {
@@ -66,51 +71,6 @@ const initialState: State = {
   currentChips: null,
   doubleDrop: {},
   version: 2,
-};
-
-const getPity = (type: JODrops, chipEnabled: boolean, doubleDrop?: boolean) => {
-  const behavior = SUPPLY_CHIP_BEHAVIOR[type];
-
-  const base = chipEnabled ? behavior.withChip : behavior.withoutChip;
-  const double = doubleDrop ? 0.5 : 0;
-
-  return base + double;
-};
-
-const getSharedPoolsForStage = (stage: JOStages) => {
-  return Object.entries(JOINT_OPS_RATES[stage]).reduce(
-    (acc, [item, { dropPool }]) => {
-      if (dropPool != null) {
-        acc.push({
-          item: item as JODrops,
-          dropPool,
-        });
-      }
-      return acc;
-    },
-    [] as { item: JODrops; dropPool: SharedDropPools }[]
-  );
-};
-
-const getStagesForPool = (dropPool: SharedDropPools) => {
-  return Object.entries(JOINT_OPS_RATES)
-    .filter(([, items]) =>
-      Object.values(items).some(rates => rates.dropPool === dropPool)
-    )
-    .map(([stage]) => stage as JOStages);
-};
-
-const forEachPoolPity = (
-  counts: WritableDraft<State['joCounts']>,
-  fn: (pity: WritableDraft<PerItemCount[JODrops]>, rates: PerChestRates) => void
-) => {
-  Object.entries(counts).forEach(([stage, { counts }]) => {
-    Object.entries(counts).forEach(([item, pity]) => {
-      const rates = JOINT_OPS_RATES[stage as JOStages][item as JODrops];
-
-      fn(pity, rates);
-    });
-  });
 };
 
 const ALL_DROPS = [

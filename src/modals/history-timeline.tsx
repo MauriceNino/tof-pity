@@ -13,7 +13,7 @@ import {
 } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { JODrops, JOStages } from '../types/joint-ops';
-import { itemToColor, last, lastIndex } from '../util/util';
+import { getStagesForPool, itemToColor, last, lastIndex } from '../util/util';
 import { ConfirmModal } from './confirm';
 
 const timeStr = (ts: number) => {
@@ -43,17 +43,21 @@ export const HistoryTimeline: FC = () => {
             }
 
             if (historyIsItemDrop(curr)) {
+              const stages = curr.dropPool
+                ? getStagesForPool(curr.dropPool)
+                : [curr.stage];
+
               const lastChestOpen = last(acc, el => el.stage === curr.stage);
               const lastDrop = lastIndex(
                 acc,
                 el =>
-                  el.stage === curr.stage &&
+                  stages.includes(el.stage) &&
                   el.drops.some(d => d.item === curr.item)
               );
               const sinceLastDrop =
                 acc
                   .slice(lastDrop === -1 ? 0 : lastDrop)
-                  .filter(el => el.stage === curr.stage).length -
+                  .filter(el => stages.includes(el.stage)).length -
                 (lastDrop === -1 ? 0 : 1);
 
               if (lastChestOpen != null) {
