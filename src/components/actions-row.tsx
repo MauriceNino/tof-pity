@@ -93,7 +93,7 @@ export const ActionsRow: FC = () => {
                 borderColor: chipCounterWarning
                   ? state.currentChips == null || state.currentChips === 0
                     ? colors.red[5]
-                    : state.currentChips <= 3
+                    : state.currentChips <= 6
                     ? colors.orange[4]
                     : undefined
                   : undefined,

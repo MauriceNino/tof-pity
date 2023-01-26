@@ -5,6 +5,7 @@ import {
   Stack,
   Switch,
   Text,
+  Tooltip,
   useMantineTheme,
 } from '@mantine/core';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -60,63 +61,112 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
         <Box>
           <Stack spacing='xs'>
             <Text weight='bold'>Features</Text>
-            <Group position='apart'>
-              <Text>Compact Layout</Text>
-              <Switch
-                checked={compactLayout}
-                onChange={() => changeSetting('compactLayout', !compactLayout)}
-              />
-            </Group>
-            <Group position='apart'>
-              <Text>JO-Chip Counter</Text>
-              <Switch
-                checked={chipCounter}
-                onChange={() => changeSetting('chipCounter', !chipCounter)}
-              />
-            </Group>
-            <AnimatePresence>
+            <Tooltip
+              multiline
+              width='auto'
+              withArrow
+              position='bottom'
+              transition='fade'
+              label='Allow the components to fade in/out when the browser window changes its size.'
+            >
+              <Group position='apart'>
+                <Text>Compact Layout</Text>
+                <Switch
+                  checked={compactLayout}
+                  onChange={() =>
+                    changeSetting('compactLayout', !compactLayout)
+                  }
+                />
+              </Group>
+            </Tooltip>
+            <Tooltip
+              multiline
+              width='auto'
+              withArrow
+              position='bottom'
+              transition='fade'
+              label='Track the current JO-Chips using an exact counter. This is useful if you want to keep track of your JO-Chips also, because you might easily miss them in the buff-bar ingame.'
+            >
+              <Group position='apart'>
+                <Text>JO-Chip Counter</Text>
+                <Switch
+                  checked={chipCounter}
+                  onChange={() => changeSetting('chipCounter', !chipCounter)}
+                />
+              </Group>
+            </Tooltip>
+            <AnimatePresence initial={false}>
               {chipCounter && (
-                <MotionGroup
-                  style={{ overflow: 'hidden' }}
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{
-                    height: 'auto',
-                    opacity: 1,
-                  }}
-                  exit={{ height: 0, opacity: 0 }}
-                  position='apart'
+                <Tooltip
+                  multiline
+                  width='auto'
+                  withArrow
+                  position='bottom'
+                  transition='fade'
+                  label='When the JO-Chips come to a low amount (lower than 6), the input will appear in a warn color. When the counter reaches 0, it will appear in an error color.'
                 >
-                  <Text>JO-Chip Counter Warning</Text>
-                  <Switch
-                    checked={chipCounterWarning}
-                    onChange={() =>
-                      changeSetting('chipCounterWarning', !chipCounterWarning)
-                    }
-                  />
-                </MotionGroup>
+                  <MotionGroup
+                    style={{ overflow: 'hidden' }}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{
+                      height: 'auto',
+                      opacity: 1,
+                    }}
+                    exit={{ height: 0, opacity: 0 }}
+                    position='apart'
+                  >
+                    <Text>JO-Chip Counter Warning</Text>
+                    <Switch
+                      checked={chipCounterWarning}
+                      onChange={() =>
+                        changeSetting('chipCounterWarning', !chipCounterWarning)
+                      }
+                    />
+                  </MotionGroup>
+                </Tooltip>
               )}
             </AnimatePresence>
-            <Group position='apart'>
-              <Text>Count Chest as 1 Pity</Text>
-              <Switch
-                checked={countChestAsOnePity}
-                onChange={() =>
-                  changeSetting('countChestAsOnePity', !countChestAsOnePity)
-                }
-              />
-            </Group>
+            <Tooltip
+              multiline
+              width='auto'
+              withArrow
+              position='bottom'
+              transition='fade'
+              label='Some resources count pity in steps of 0.5, some do it in steps of 1. To make the experience more consistent, we chose the pity in steps of 1, but if you prefer it the other way, disable this option.'
+            >
+              <Group position='apart'>
+                <Text>Count Chest as 1 Pity</Text>
+                <Switch
+                  checked={countChestAsOnePity}
+                  onChange={() =>
+                    changeSetting('countChestAsOnePity', !countChestAsOnePity)
+                  }
+                />
+              </Group>
+            </Tooltip>
           </Stack>
         </Box>
 
         <Stack spacing='xs'>
           <Text weight='bold'>Events</Text>
-          <Group position='apart'>
-            <Text>Double Drop Event</Text>
-            <Switch
-              checked={doubleDrop}
-              onChange={() => dispatch(stateActions.setDoubleDrop(!doubleDrop))}
-            />
-          </Group>
+          <Tooltip
+            multiline
+            width='auto'
+            withArrow
+            position='bottom'
+            transition='fade'
+            label='When there is a double drop event in game you can flip this switch manually, to update the pity accordingly. Normally this is done for you when an event is running.'
+          >
+            <Group position='apart'>
+              <Text>Double Drop Event</Text>
+              <Switch
+                checked={doubleDrop}
+                onChange={() =>
+                  dispatch(stateActions.setDoubleDrop(!doubleDrop))
+                }
+              />
+            </Group>
+          </Tooltip>
         </Stack>
 
         <Stack spacing='xs'>
