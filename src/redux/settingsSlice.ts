@@ -17,7 +17,7 @@ export type SettingsState = {
   version: number;
 };
 
-const initialState: SettingsState = {
+export const initialSettingsState: SettingsState = {
   selectedStage: JOStages.HARD_II,
   chipEnabled: true,
   goldEnabled: true,
@@ -33,7 +33,7 @@ const initialState: SettingsState = {
 
 export const settingsSlice = createSlice({
   name: 'settings',
-  initialState,
+  initialState: initialSettingsState,
   reducers: {
     changeSetting: (state, action: PayloadAction<Partial<SettingsState>>) => {
       Object.entries(action.payload).forEach(([key, value]) => {

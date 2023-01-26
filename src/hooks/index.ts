@@ -2,8 +2,12 @@ import { useMantineTheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
 import { JOINT_OPS_RATES } from '../constants/joint-ops';
-import { selectSettings, settingsActions } from '../redux/settingsSlice';
-import { selectState, stateActions } from '../redux/stateSlice';
+import {
+  initialSettingsState,
+  selectSettings,
+  settingsActions,
+} from '../redux/settingsSlice';
+import { initialState, selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { GearTypes, JODrops, JOStages, MatrixTypes } from '../types/joint-ops';
 
@@ -112,4 +116,9 @@ export const useVersionMigrations = () => {
       dispatch(stateActions.migrateToV2());
     }
   }, [settings.version, state.version]);
+
+  return (
+    state.version < initialState.version ||
+    settings.version < initialSettingsState.version
+  );
 };

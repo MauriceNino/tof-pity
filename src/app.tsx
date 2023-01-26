@@ -1,8 +1,18 @@
-import { Box, createStyles, DefaultMantineColor, Tuple } from '@mantine/core';
+import {
+  Box,
+  Button,
+  createStyles,
+  DefaultMantineColor,
+  Stack,
+  Text,
+  Tuple,
+} from '@mantine/core';
 import { motion } from 'framer-motion';
 import { FC } from 'react';
+import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 
 import { PityCounter } from './components/pity-counter';
+import { UpdatePwa } from './components/update-pwa';
 import { useIsCompact, useVersionMigrations } from './hooks';
 
 type ExtendedCustomColors =
@@ -42,17 +52,32 @@ const useStyles = createStyles((t, { compact }: { compact: boolean }) => ({
   },
 }));
 
+const OnErrorContent: FC<FallbackProps> = ({ error, resetErrorBoundary }) => {
+  return (
+    <Stack spacing='xs' justify='space-between' style={{ height: '100%' }}>
+      <Text>Oops an error happened while rendering the application.</Text>
+      <Button onClick={resetErrorBoundary}>Reload</Button>
+    </Stack>
+  );
+};
+
 export const App: FC = () => {
   const compact = useIsCompact();
   const { classes } = useStyles({ compact });
 
-  useVersionMigrations();
+  const needsMajorUpdate = useVersionMigrations();
 
   return (
-    <Box className={classes.background}>
-      <motion.div layout className={classes.centerArea}>
-        <PityCounter />
-      </motion.div>
-    </Box>
+    <>
+      <Box className={classes.background}>
+        <motion.div layout className={classes.centerArea}>
+          <ErrorBoundary FallbackComponent={OnErrorContent}>
+            {!needsMajorUpdate && <PityCounter />}
+          </ErrorBoundary>
+        </motion.div>
+      </Box>
+
+      <UpdatePwa />
+    </>
   );
 };

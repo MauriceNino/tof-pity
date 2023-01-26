@@ -77,7 +77,7 @@ export const historyIsItemDrop = (
   history: History
 ): history is HistoryItemDrop => history.type === HistoryChangeType.ITEM_DROP;
 
-const initialState: State = {
+export const initialState: State = {
   changeHistory: [],
   currentPity: {
     dropPool: {},
