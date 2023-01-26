@@ -281,12 +281,14 @@ export const stateSlice = createSlice({
       state.version = action.payload.version;
       // for legacy reasons
       state.joCounts = action.payload.joCounts;
+      buildPityFromHistory(state, true);
     },
     clearHistory: state => {
       state.changeHistory = [];
     },
     removeSpecificHistory: (state, action: PayloadAction<number>) => {
       state.changeHistory.splice(action.payload, 1);
+      buildPityFromHistory(state, true);
     },
     setChipCounter: (state, action: PayloadAction<number | null>) => {
       state.currentChips = action.payload;
