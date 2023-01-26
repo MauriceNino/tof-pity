@@ -11,12 +11,7 @@ import {
   PerItemCount,
   SharedDropPools,
 } from '../types/joint-ops';
-import {
-  forEachPoolPity,
-  getPity,
-  getSharedPoolsForStage,
-  getStagesForPool,
-} from '../util/util';
+import { forEachPoolPity, getPity, getSharedPoolsForStage } from '../util/util';
 import { RootState } from './store';
 
 export enum HistoryChangeType {
@@ -34,16 +29,37 @@ type HistoryChestOpen = {
 type HistoryItemDrop = {
   type: HistoryChangeType.ITEM_DROP;
   stage: JOStages;
-  dropPool?: SharedDropPools;
   item: GearTypes | MatrixTypes;
-  pity: number;
   ts: number;
+
+  // legacy
+  dropPool?: SharedDropPools; //v2 -> v3
+  pity?: number; //v1 -> v3
+};
+
+type PityHistory = {
+  currentPity: number;
+  carryOverFromOffPity?: number;
+  onPity: boolean;
+  lastPityWrong: boolean;
 };
 
 type History = HistoryChestOpen | HistoryItemDrop;
 
 export type State = {
-  joCounts: Partial<
+  changeHistory: History[];
+  currentPity: {
+    dropPool: Partial<Record<SharedDropPools, PityHistory[]>>;
+    stages: Partial<Record<JOStages, Partial<Record<JODrops, PityHistory[]>>>>;
+    lastHistoryIdx: number;
+  };
+  currentChips: number | null;
+  doubleDrop: Partial<Record<JOStages, Record<JODrops, boolean>>>;
+  version: number;
+
+  // legacy
+  joCounts?: Partial<
+    //v1 -> v3
     Record<
       JOStages,
       {
@@ -51,10 +67,6 @@ export type State = {
       }
     >
   >;
-  changeHistory: History[];
-  currentChips: number | null;
-  doubleDrop: Partial<Record<JOStages, Record<JODrops, boolean>>>;
-  version: number;
 };
 
 export const historyIsChestOpen = (
@@ -66,11 +78,15 @@ export const historyIsItemDrop = (
 ): history is HistoryItemDrop => history.type === HistoryChangeType.ITEM_DROP;
 
 const initialState: State = {
-  joCounts: {},
   changeHistory: [],
+  currentPity: {
+    dropPool: {},
+    stages: {},
+    lastHistoryIdx: 0,
+  },
   currentChips: null,
   doubleDrop: {},
-  version: 2,
+  version: 3,
 };
 
 const ALL_DROPS = [
@@ -84,56 +100,124 @@ const ALL_DROPS = [
   MatrixTypes.Green,
 ];
 
-const addToAll = (
-  state: WritableDraft<State>,
+const updatePityForDrop = (
+  currentArr: WritableDraft<PityHistory>[],
   stage: JOStages,
-  chests: number,
-  chipEnabled: boolean,
-  doubleDropChances?: Record<JODrops, boolean>
+  item: JODrops
 ) => {
-  const pools = getSharedPoolsForStage(stage);
+  if (!currentArr || currentArr.length === 0) return;
 
-  pools.forEach(({ item: dpItem, dropPool }) => {
-    const dpStages = getStagesForPool(dropPool);
+  const current = currentArr.at(-1)!;
 
-    dpStages.forEach(dpStage => {
-      // Set all pity to 0 if not initialized
-      if (state.joCounts[dpStage] == null) {
-        state.joCounts[dpStage] = {
-          counts: Object.fromEntries(
-            ALL_DROPS.map(t => [t, { currentPity: 0 }])
-          ) as PerItemCount,
-        };
-      }
+  if (currentArr.length <= 1) {
+    currentArr.push({
+      currentPity: 0,
+      onPity: true,
+      lastPityWrong: false,
+    });
+  } else {
+    const sf = JOINT_OPS_RATES[stage][item].specialFall;
 
-      // Set pity for pools that are affected in all except the current stage
-      Object.entries(state.joCounts[dpStage]!.counts).forEach(
-        ([item, pity]) => {
-          if (dpStage !== stage && item === dpItem) {
-            pity.currentPity =
-              pity.currentPity +
-              chests *
-                getPity(
-                  item as JODrops,
-                  chipEnabled,
-                  doubleDropChances?.[item]
-                );
+    if (sf) {
+      const lastPityWrong = current.currentPity > sf.rangeEnd;
+      const isPity =
+        lastPityWrong ||
+        (current.currentPity >= sf.rangeStart &&
+          current.currentPity <= sf.rangeEnd);
+
+      current.onPity = isPity;
+      current.lastPityWrong = lastPityWrong;
+
+      currentArr.push({
+        currentPity: isPity ? 0 : current.currentPity,
+        onPity: true,
+        carryOverFromOffPity: isPity ? undefined : current.currentPity,
+        lastPityWrong: false,
+      });
+    } else {
+      currentArr.push({
+        currentPity: 0,
+        onPity: true,
+        lastPityWrong: false,
+      });
+    }
+  }
+};
+
+export const buildPityFromHistory = (
+  state: WritableDraft<State>,
+  forceRebuild = false
+) => {
+  if (forceRebuild) {
+    state.currentPity = {
+      dropPool: {},
+      stages: {},
+      lastHistoryIdx: 0,
+    };
+  }
+
+  const stageState = state.currentPity.stages;
+  const dpState = state.currentPity.dropPool;
+  const fromIdx = state.currentPity.lastHistoryIdx;
+
+  state.changeHistory.slice(fromIdx).forEach(his => {
+    if (historyIsChestOpen(his)) {
+      Object.entries(JOINT_OPS_RATES[his.stage]).forEach(([item, rates]) => {
+        const pity = getPity(
+          item as JODrops,
+          his.withChip,
+          his.doubleDrop?.[item as JODrops]
+        );
+
+        if (rates.dropPool) {
+          if (!dpState[rates.dropPool]) {
+            dpState[rates.dropPool] = [];
+          }
+          const current = dpState[rates.dropPool]!;
+
+          if (current.length === 0) {
+            current.push({
+              currentPity: pity,
+              onPity: true,
+              lastPityWrong: false,
+            });
+          } else {
+            current[current.length - 1].currentPity += pity;
+          }
+        } else {
+          if (!stageState[his.stage]) {
+            stageState[his.stage] = {};
+          }
+          if (!stageState[his.stage]![item as JODrops]) {
+            stageState[his.stage]![item as JODrops] = [];
+          }
+          const current = stageState[his.stage]![item as JODrops]!;
+
+          if (current.length === 0) {
+            current.push({
+              currentPity: pity,
+              onPity: true,
+              lastPityWrong: false,
+            });
+          } else {
+            current[current.length - 1].currentPity += pity;
           }
         }
-      );
-    });
-  });
+      });
+    } else if (historyIsItemDrop(his)) {
+      const { dropPool } = JOINT_OPS_RATES[his.stage][his.item];
 
-  // Set pity for all items in current stage
-  Object.entries(state.joCounts[stage]!.counts).forEach(([item, pity]) => {
-    pity.currentPity =
-      pity.currentPity +
-      chests *
-        getPity(
-          item as JODrops,
-          chipEnabled,
-          doubleDropChances?.[item as JODrops]
+      if (dropPool) {
+        updatePityForDrop(dpState[dropPool]!, his.stage, his.item);
+      } else {
+        updatePityForDrop(
+          state.currentPity.stages[his.stage]![his.item]!,
+          his.stage,
+          his.item
         );
+      }
+    }
+    state.currentPity.lastHistoryIdx++;
   });
 };
 
@@ -155,16 +239,8 @@ export const stateSlice = createSlice({
         ? state.currentChips != null && state.currentChips > 0
         : chipEnabled;
 
-      addToAll(
-        state,
-        selectedStage,
-        1,
-        realChipEnabled,
-        state.doubleDrop[selectedStage]
-      );
-
       if (chipCounter && state.currentChips != null && state.currentChips > 0) {
-        state.currentChips = state.currentChips - 1;
+        state.currentChips -= 1;
       }
 
       state.changeHistory.push({
@@ -174,6 +250,8 @@ export const stateSlice = createSlice({
         doubleDrop: state.doubleDrop[selectedStage],
         ts: moment().valueOf(),
       });
+
+      buildPityFromHistory(state);
     },
     registerDrop: (
       state,
@@ -184,29 +262,14 @@ export const stateSlice = createSlice({
         selectedStage: JOStages;
       }>
     ) => {
-      const stage = state.joCounts[selectedStage];
-      if (stage) {
-        const { dropPool } = JOINT_OPS_RATES[selectedStage][drop];
+      state.changeHistory.push({
+        type: HistoryChangeType.ITEM_DROP,
+        stage: selectedStage,
+        item: drop,
+        ts: moment().valueOf(),
+      });
 
-        state.changeHistory.push({
-          type: HistoryChangeType.ITEM_DROP,
-          stage: selectedStage,
-          item: drop,
-          pity: stage.counts[drop].currentPity,
-          ts: moment().valueOf(),
-          dropPool,
-        });
-
-        if (dropPool) {
-          forEachPoolPity(state.joCounts, (pity, rates) => {
-            if (rates.dropPool === dropPool) {
-              pity.currentPity = 0;
-            }
-          });
-        } else {
-          stage.counts[drop].currentPity = 0;
-        }
-      }
+      buildPityFromHistory(state);
     },
     goBackHistory: (
       state,
@@ -219,37 +282,20 @@ export const stateSlice = createSlice({
       const lastHistory = state.changeHistory.pop();
       if (lastHistory) {
         if (historyIsChestOpen(lastHistory)) {
-          addToAll(
-            state,
-            lastHistory.stage,
-            -1,
-            lastHistory.withChip,
-            lastHistory.doubleDrop
-          );
-
           if (lastHistory.withChip && chipCounter) {
             state.currentChips =
               state.currentChips == null ? 1 : state.currentChips + 1;
           }
         }
-        if (historyIsItemDrop(lastHistory)) {
-          if (lastHistory.dropPool) {
-            getStagesForPool(lastHistory.dropPool).forEach(stage => {
-              state.joCounts[stage]!.counts[lastHistory.item].currentPity =
-                lastHistory.pity;
-            });
-          } else {
-            state.joCounts[lastHistory.stage]!.counts[
-              lastHistory.item
-            ].currentPity = lastHistory.pity;
-          }
-        }
+
+        buildPityFromHistory(state, true);
       }
     },
     overrideState: (state, action: PayloadAction<State>) => {
       state.changeHistory = action.payload.changeHistory;
-      state.joCounts = action.payload.joCounts;
       state.version = action.payload.version;
+      // for legacy reasons
+      state.joCounts = action.payload.joCounts;
     },
     clearHistory: state => {
       state.changeHistory = [];
@@ -306,6 +352,12 @@ export const stateSlice = createSlice({
     migrateToV2: state => {
       state.doubleDrop = {};
       state.version = 2;
+    },
+    migrateToV3: state => {
+      buildPityFromHistory(state, true);
+
+      state.joCounts = undefined;
+      state.version = 3;
     },
   },
 });

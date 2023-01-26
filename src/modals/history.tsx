@@ -64,7 +64,7 @@ export const HistoryModal: FC<{ opened: boolean; close: () => void }> = ({
           const fileContent = await importFile.text();
           const jsonContent = JSON.parse(fileContent);
 
-          if (jsonContent.joCounts && jsonContent.changeHistory) {
+          if (jsonContent.changeHistory) {
             dispatch(stateActions.overrideState(jsonContent));
             setImportFile(null);
           } else {

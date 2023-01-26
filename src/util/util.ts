@@ -1,4 +1,5 @@
 import { MantineTheme } from '@mantine/core';
+import { WritableDraft } from 'immer/dist/internal';
 
 import { JOINT_OPS_RATES, SUPPLY_CHIP_BEHAVIOR } from '../constants/joint-ops';
 import { State } from '../redux/stateSlice';
@@ -68,11 +69,27 @@ export const forEachPoolPity = (
   counts: State['joCounts'],
   fn: (pity: PerItemCount[JODrops], rates: PerChestRates) => void
 ) => {
-  Object.entries(counts).forEach(([stage, { counts }]) => {
+  Object.entries(counts ?? {}).forEach(([stage, { counts }]) => {
     Object.entries(counts).forEach(([item, pity]) => {
       const rates = JOINT_OPS_RATES[stage as JOStages][item as JODrops];
 
       fn(pity, rates);
     });
   });
+};
+
+export const arrOrCreate = <T>(arr?: WritableDraft<T>[]) => {
+  if (!arr) {
+    arr = [] as WritableDraft<T>[];
+  }
+
+  return arr;
+};
+
+export const objOrCreate = <T extends object>(obj?: WritableDraft<T>) => {
+  if (!obj) {
+    obj = {} as WritableDraft<T>;
+  }
+
+  return obj;
 };

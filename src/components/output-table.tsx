@@ -3,6 +3,7 @@ import {
   Checkbox,
   createStyles,
   Table,
+  Text,
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
@@ -14,7 +15,7 @@ import {
   isNoChance,
   JOINT_OPS_RATES,
 } from '../constants/joint-ops';
-import { useDropTableOrder, useWindowSize } from '../hooks';
+import { useDropTableOrder, usePity, useWindowSize } from '../hooks';
 import { selectSettings } from '../redux/settingsSlice';
 import { selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
@@ -71,8 +72,7 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   const { classes } = useStyles();
 
   const rates = JOINT_OPS_RATES[selectedStage][item];
-  const counts = state.joCounts[selectedStage]?.counts?.[item];
-  const currentPity = counts?.currentPity ?? 0;
+  const { pity } = usePity(selectedStage, item);
 
   const doubleDrop = state.doubleDrop[selectedStage]?.[item];
 
@@ -96,13 +96,13 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
       {!isCompactTable && (
         <>
           <td className={classes.opacityChange}>
-            {getDropsChance(rates, 0, counts?.currentPity)}
+            {getDropsChance(rates, 0, pity)}
           </td>
           <td className={classes.opacityChange}>
-            {getDropsChance(rates, 1, counts?.currentPity)}
+            {getDropsChance(rates, 1, pity)}
           </td>
           <td className={classes.opacityChange}>
-            {getDropsChance(rates, 2, counts?.currentPity)}
+            {getDropsChance(rates, 2, pity)}
           </td>
         </>
       )}
@@ -131,14 +131,14 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
           multiline
           width={350}
           withArrow
-          position='left'
+          position='bottom-end'
           transition='fade'
           label={
             'If your chest dropped the item, click this button to indicate a drop. If you have gotten two drops, you can click the button twice.'
           }
         >
           <Button
-            variant={currentPity === 0 ? 'subtle' : 'light'}
+            variant={pity === 0 ? 'subtle' : 'light'}
             onClick={() =>
               dispatch(
                 stateActions.registerDrop({
@@ -176,10 +176,10 @@ const TABLE_HEADINGS = [
   {
     text: 'Pity',
     description:
-      'The current pity for this item compared to the expected max pity where a guaranteed drop will happen.',
+      'The current pity for this item compared to the expected pity range where a guaranteed drop will happen.',
   },
   {
-    text: 'Double Drop',
+    text: 'Drop Event',
     description:
       'When there is a double drop event for this item, please check this box. Normally this will automatically check itself, if there is an event going on.',
   },
@@ -213,7 +213,7 @@ export const OutputTable: FC = () => {
                       withArrow
                       position='bottom'
                       transition='fade'
-                      label={h.description}
+                      label={<Text weight='normal'>{h.description}</Text>}
                     >
                       <span>{h.text}</span>
                     </Tooltip>

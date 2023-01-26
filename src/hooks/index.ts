@@ -1,10 +1,11 @@
 import { useMantineTheme } from '@mantine/core';
 import { useEffect, useState } from 'react';
 
+import { JOINT_OPS_RATES } from '../constants/joint-ops';
 import { selectSettings, settingsActions } from '../redux/settingsSlice';
 import { selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
-import { GearTypes, JODrops, MatrixTypes } from '../types/joint-ops';
+import { GearTypes, JODrops, JOStages, MatrixTypes } from '../types/joint-ops';
 
 export const useWindowSize = () => {
   const [windowSize, setWindowSize] = useState<{
@@ -60,6 +61,24 @@ export const useDropTableOrder = (respectSettings = true) => {
   return dropTable;
 };
 
+export const usePity = (stage: JOStages, item: JODrops) => {
+  const state = useAppSelector(selectState);
+
+  const { dropPool } = JOINT_OPS_RATES[stage][item];
+
+  const pityArr = dropPool
+    ? state.currentPity.dropPool[dropPool]
+    : state.currentPity.stages[stage]?.[item];
+
+  const pity = pityArr?.at(-1);
+
+  return {
+    pity: pity?.currentPity ?? 0,
+    carryOver: pity?.carryOverFromOffPity ?? 0,
+    dropped: pityArr?.length ?? 0,
+  };
+};
+
 export const useVersionMigrations = () => {
   const dispatch = useAppDispatch();
   const settings = useAppSelector(selectSettings);
@@ -91,6 +110,9 @@ export const useVersionMigrations = () => {
 
     if (state.version == 1) {
       dispatch(stateActions.migrateToV2());
+    }
+    if (state.version == 2) {
+      dispatch(stateActions.migrateToV3());
     }
   }, [settings.version, state.version]);
 };
