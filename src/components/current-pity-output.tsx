@@ -21,8 +21,10 @@ export const CurrentPityOutput: FC<{
   const currentPity = (pity - carryOver) * (countChestAsOnePity ? 2 : 1);
 
   if (specialFall) {
+    const firstDropOffset = dropped <= 1 ? specialFall.initial / 2 : 0;
     const sfrs =
-      (specialFall.rangeStart - carryOver) * (countChestAsOnePity ? 2 : 1);
+      (specialFall.rangeStart - carryOver - firstDropOffset) *
+      (countChestAsOnePity ? 2 : 1);
     const sfre =
       (specialFall.rangeEnd - carryOver) * (countChestAsOnePity ? 2 : 1);
 
