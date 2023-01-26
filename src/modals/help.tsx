@@ -50,8 +50,12 @@ export const HelpModal: FC<{ opened: boolean; close: () => void }> = ({
               counter
             </List.Item>
             <List.Item>
-              When you dropped the desired reward, click the Drop button next to
-              it
+              When you dropped the desired reward, click the &quot;Drop&quot;
+              button next to it
+            </List.Item>
+            <List.Item>
+              Optional: When you get two drops in one chest, you can click the
+              &quot;Drop&quot; button twice
             </List.Item>
           </List>
         </Box>
@@ -59,7 +63,7 @@ export const HelpModal: FC<{ opened: boolean; close: () => void }> = ({
         <Box>
           <Text weight='bold'>What data is this based on?</Text>
           <Text size='sm'>
-            All the data is based on{' '}
+            All the data was initially based on{' '}
             <Text
               component='a'
               href='https://twitter.com/Sova_ToF/status/1565048068252344326'
@@ -68,23 +72,28 @@ export const HelpModal: FC<{ opened: boolean; close: () => void }> = ({
             >
               this tweet
             </Text>
+            . And then later changed to fit the research of{' '}
+            <Text
+              component='a'
+              href='https://lensdump.com/a/T3uAZ'
+              target='_blank'
+              color='blue'
+            >
+              this infographic
+            </Text>
             .
           </Text>
         </Box>
 
         <Box>
-          <Text weight='bold'>
-            Why does the pity for matrix only go up 0.5 per chest?
-          </Text>
+          <Text weight='bold'>Why does the pity reset to weird numbers?</Text>
           <Text size='sm'>
-            The current data suggests, that every chest gives 0.5 pity for every
-            possible drop. Joint Ops chips double that pity increase for all
-            armor type items, which is why they are increased by 1 on each
-            chest, if enabled. Unfortunately matrix pity is not affected by
-            JO-Chips, which is why they only go up 0.5, no matter what.
+            The program tries to detect when your next pity will happen. When it
+            successfully establishes a pity chain, we can detect off-pity drops.
             <br />
-            This also means, that the actual pity for SSR matrix is at 68
-            chests, not 34!
+            So if we do detect such an off-pity drop, we will still reset the
+            counter to 0, but to make it more clear when the next pity will
+            drop, we will also adjust the pity range accordingly.
           </Text>
         </Box>
       </Stack>
