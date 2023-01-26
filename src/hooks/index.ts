@@ -111,8 +111,5 @@ export const useVersionMigrations = () => {
     if (state.version == 1) {
       dispatch(stateActions.migrateToV2());
     }
-    if (state.version == 2) {
-      dispatch(stateActions.migrateToV3());
-    }
   }, [settings.version, state.version]);
 };

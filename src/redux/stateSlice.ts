@@ -23,7 +23,7 @@ type HistoryChestOpen = {
   type: HistoryChangeType.CHEST_OPEN;
   stage: JOStages;
   withChip: boolean;
-  doubleDrop?: Record<JODrops, boolean>;
+  doubleDrop: boolean;
   ts: number;
 };
 type HistoryItemDrop = {
@@ -33,8 +33,8 @@ type HistoryItemDrop = {
   ts: number;
 
   // legacy
-  dropPool?: SharedDropPools; //v2 -> v3
-  pity?: number; //v1 -> v3
+  dropPool?: SharedDropPools; //v1 -> v2
+  pity?: number; //v1 -> v2
 };
 
 type PityHistory = {
@@ -54,12 +54,12 @@ export type State = {
     lastHistoryIdx: number;
   };
   currentChips: number | null;
-  doubleDrop: Partial<Record<JOStages, Record<JODrops, boolean>>>;
+  doubleDrop: boolean;
   version: number;
 
   // legacy
   joCounts?: Partial<
-    //v1 -> v3
+    //v1 -> v2
     Record<
       JOStages,
       {
@@ -85,20 +85,9 @@ const initialState: State = {
     lastHistoryIdx: 0,
   },
   currentChips: null,
-  doubleDrop: {},
-  version: 3,
+  doubleDrop: false,
+  version: 2,
 };
-
-const ALL_DROPS = [
-  GearTypes.Gold,
-  MatrixTypes.Gold,
-  GearTypes.Purple,
-  MatrixTypes.Purple,
-  GearTypes.Blue,
-  MatrixTypes.Blue,
-  GearTypes.Green,
-  MatrixTypes.Green,
-];
 
 const updatePityForDrop = (
   currentArr: WritableDraft<PityHistory>[],
@@ -163,11 +152,7 @@ export const buildPityFromHistory = (
   state.changeHistory.slice(fromIdx).forEach(his => {
     if (historyIsChestOpen(his)) {
       Object.entries(JOINT_OPS_RATES[his.stage]).forEach(([item, rates]) => {
-        const pity = getPity(
-          item as JODrops,
-          his.withChip,
-          his.doubleDrop?.[item as JODrops]
-        );
+        const pity = getPity(item as JODrops, his.withChip, his.doubleDrop);
 
         if (rates.dropPool) {
           if (!dpState[rates.dropPool]) {
@@ -247,7 +232,7 @@ export const stateSlice = createSlice({
         type: HistoryChangeType.CHEST_OPEN,
         stage: selectedStage,
         withChip: realChipEnabled,
-        doubleDrop: state.doubleDrop[selectedStage],
+        doubleDrop: state.doubleDrop,
         ts: moment().valueOf(),
       });
 
@@ -306,19 +291,8 @@ export const stateSlice = createSlice({
     setChipCounter: (state, action: PayloadAction<number | null>) => {
       state.currentChips = action.payload;
     },
-    flipDoubleDrop: (
-      state,
-      action: PayloadAction<{ stage: JOStages; item: JODrops }>
-    ) => {
-      const { stage, item } = action.payload;
-
-      if (!state.doubleDrop[stage]) {
-        state.doubleDrop[stage] = Object.fromEntries(
-          ALL_DROPS.map(t => [t, false])
-        ) as Record<JODrops, boolean>;
-      }
-
-      state.doubleDrop[stage]![item] = !state.doubleDrop[stage]![item];
+    setDoubleDrop: (state, action: PayloadAction<boolean>) => {
+      state.doubleDrop = action.payload;
     },
     migrateHistoryToV1: state => {
       const pityCountInPool: Partial<Record<SharedDropPools, number>> = {};
@@ -350,14 +324,11 @@ export const stateSlice = createSlice({
       state.version = 1;
     },
     migrateToV2: state => {
-      state.doubleDrop = {};
-      state.version = 2;
-    },
-    migrateToV3: state => {
       buildPityFromHistory(state, true);
 
+      state.doubleDrop = false;
       state.joCounts = undefined;
-      state.version = 3;
+      state.version = 2;
     },
   },
 });

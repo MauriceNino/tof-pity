@@ -1,6 +1,5 @@
 import {
   Button,
-  Checkbox,
   createStyles,
   Table,
   Text,
@@ -17,7 +16,7 @@ import {
 } from '../constants/joint-ops';
 import { useDropTableOrder, usePity, useWindowSize } from '../hooks';
 import { selectSettings } from '../redux/settingsSlice';
-import { selectState, stateActions } from '../redux/stateSlice';
+import { stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 import { JODrops, PerChestRates } from '../types/joint-ops';
 import { itemToColor } from '../util/util';
@@ -63,7 +62,6 @@ const useStyles = createStyles((t, _, getRef) => ({
 
 export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
   const dispatch = useAppDispatch();
-  const state = useAppSelector(selectState);
   const { selectedStage, compactLayout } = useAppSelector(selectSettings);
 
   const { width } = useWindowSize();
@@ -73,8 +71,6 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
 
   const rates = JOINT_OPS_RATES[selectedStage][item];
   const { pity } = usePity(selectedStage, item);
-
-  const doubleDrop = state.doubleDrop[selectedStage]?.[item];
 
   return (
     <motion.tr
@@ -110,20 +106,6 @@ export const TableRow: FC<{ item: JODrops }> = ({ item }) => {
         <CurrentPityOutput
           item={item}
           opacityChangeClass={classes.opacityChange}
-        />
-      </td>
-      <td>
-        <Checkbox
-          style={{ marginLeft: '25%' }}
-          checked={doubleDrop}
-          onChange={() =>
-            dispatch(
-              stateActions.flipDoubleDrop({
-                stage: selectedStage,
-                item,
-              })
-            )
-          }
         />
       </td>
       <td>
@@ -177,11 +159,6 @@ const TABLE_HEADINGS = [
     text: 'Pity',
     description:
       'The current pity for this item compared to the expected pity range where a guaranteed drop will happen.',
-  },
-  {
-    text: 'Drop Event',
-    description:
-      'When there is a double drop event for this item, please check this box. Normally this will automatically check itself, if there is an event going on.',
   },
   {
     text: '',

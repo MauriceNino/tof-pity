@@ -15,6 +15,7 @@ import {
   settingsActions,
   SettingsState,
 } from '../redux/settingsSlice';
+import { selectState, stateActions } from '../redux/stateSlice';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 
 const MotionGroup = motion(Group);
@@ -34,6 +35,7 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
     chipCounterWarning,
     countChestAsOnePity,
   } = useAppSelector(selectSettings);
+  const { doubleDrop } = useAppSelector(selectState);
 
   const changeSetting = <T extends keyof SettingsState>(
     key: T,
@@ -105,6 +107,17 @@ export const SettingsModal: FC<{ opened: boolean; close: () => void }> = ({
             </Group>
           </Stack>
         </Box>
+
+        <Stack spacing='xs'>
+          <Text weight='bold'>Events</Text>
+          <Group position='apart'>
+            <Text>Double Drop Event</Text>
+            <Switch
+              checked={doubleDrop}
+              onChange={() => dispatch(stateActions.setDoubleDrop(!doubleDrop))}
+            />
+          </Group>
+        </Stack>
 
         <Stack spacing='xs'>
           <Text weight='bold'>Enabled Items</Text>
