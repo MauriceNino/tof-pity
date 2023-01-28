@@ -133,6 +133,30 @@ const updatePityForDrop = (
   }
 };
 
+const spPity = (
+  state: State['currentPity']['dropPool'],
+  dropPool: SharedDropPools
+) => {
+  if (!state[dropPool]) {
+    state[dropPool] = [];
+  }
+  return state[dropPool]!;
+};
+
+const stagePity = (
+  state: State['currentPity']['stages'],
+  stage: JOStages,
+  item: JODrops
+) => {
+  if (!state[stage]) {
+    state[stage] = {};
+  }
+  if (!state[stage]![item]) {
+    state[stage]![item] = [];
+  }
+  return state[stage]![item]!;
+};
+
 export const buildPityFromHistory = (
   state: WritableDraft<State>,
   forceRebuild = false
@@ -155,10 +179,7 @@ export const buildPityFromHistory = (
         const pity = getPity(item as JODrops, his.withChip, his.doubleDrop);
 
         if (rates.dropPool) {
-          if (!dpState[rates.dropPool]) {
-            dpState[rates.dropPool] = [];
-          }
-          const current = dpState[rates.dropPool]!;
+          const current = spPity(dpState, rates.dropPool);
 
           if (current.length === 0) {
             current.push({
@@ -170,13 +191,7 @@ export const buildPityFromHistory = (
             current[current.length - 1].currentPity += pity;
           }
         } else {
-          if (!stageState[his.stage]) {
-            stageState[his.stage] = {};
-          }
-          if (!stageState[his.stage]![item as JODrops]) {
-            stageState[his.stage]![item as JODrops] = [];
-          }
-          const current = stageState[his.stage]![item as JODrops]!;
+          const current = stagePity(stageState, his.stage, item as JODrops);
 
           if (current.length === 0) {
             current.push({
@@ -193,10 +208,10 @@ export const buildPityFromHistory = (
       const { dropPool } = JOINT_OPS_RATES[his.stage][his.item];
 
       if (dropPool) {
-        updatePityForDrop(dpState[dropPool]!, his.stage, his.item);
+        updatePityForDrop(spPity(dpState, dropPool), his.stage, his.item);
       } else {
         updatePityForDrop(
-          state.currentPity.stages[his.stage]![his.item]!,
+          stagePity(stageState, his.stage, his.item),
           his.stage,
           his.item
         );
