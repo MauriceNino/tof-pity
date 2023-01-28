@@ -273,18 +273,18 @@ export const JOINT_OPS_RATES: Record<JOStages, PerItemRates> = {
 };
 
 export const JOINT_OPS_NAMES: Record<JOStages, [string, string]> = {
-  [JOStages.I]: ['Joint Operation I (Lv. 20)', 'I'],
-  [JOStages.II]: ['Joint Operation II (Lv. 25)', 'II'],
-  [JOStages.III]: ['Joint Operation III (Lv. 31)', 'III'],
-  [JOStages.IV]: ['Joint Operation IV (Lv. 37)', 'IV'],
-  [JOStages.V]: ['Joint Operation V (Lv. 43)', 'V'],
-  [JOStages.VI]: ['Joint Operation VI (Lv. 50)', 'VI'],
-  [JOStages.VII]: ['Joint Operation VII (Lv. 60)', 'VII'],
-  [JOStages.VIII]: ['Joint Operation VIII (Lv. 70)', 'VIII'],
-  [JOStages.HARD_I]: ['Joint Operation VERA I (Lv. 75)', 'VERA I'],
-  [JOStages.HARD_II]: ['Joint Operation VERA II (Lv. 80)', 'VERA II'],
-  [JOStages.HARD_III]: ['Joint Operation VERA III (Lv. 85)', 'VERA III'],
-  [JOStages.HARD_IV]: ['Joint Operation VERA IV (Lv. 90)', 'VERA IV'],
+  [JOStages.I]: ['Joint Op. I (Lv. 20)', 'I'],
+  [JOStages.II]: ['Joint Op. II (Lv. 25)', 'II'],
+  [JOStages.III]: ['Joint Op. III (Lv. 31)', 'III'],
+  [JOStages.IV]: ['Joint Op. IV (Lv. 37)', 'IV'],
+  [JOStages.V]: ['Joint Op. V (Lv. 43)', 'V'],
+  [JOStages.VI]: ['Joint Op. VI (Lv. 50)', 'VI'],
+  [JOStages.VII]: ['Joint Op. VII (Lv. 60)', 'VII'],
+  [JOStages.VIII]: ['Joint Op. VIII (Lv. 70)', 'VIII'],
+  [JOStages.HARD_I]: ['Joint Op. VERA I (Lv. 75)', 'VERA I'],
+  [JOStages.HARD_II]: ['Joint Op. VERA II (Lv. 80)', 'VERA II'],
+  [JOStages.HARD_III]: ['Joint Op. VERA III (Lv. 85)', 'VERA III'],
+  [JOStages.HARD_IV]: ['Joint Op. VERA IV (Lv. 90)', 'VERA IV'],
 };
 
 export const DROPS_NAMES: Record<JODrops, string> = {

@@ -167,13 +167,25 @@ const TABLE_HEADINGS = [
 
 export const OutputTable: FC = () => {
   const { selectedStage, compactLayout } = useAppSelector(selectSettings);
-  const dropTableOrder = useDropTableOrder();
+  const dropTableOrder = useDropTableOrder().filter(
+    t => !isNoChance(selectedStage, t)
+  );
   const { width } = useWindowSize();
   const isCompactTable = width < CHEST_SHOW_BREAKPOINT && compactLayout;
 
   const headings = TABLE_HEADINGS.filter(
     (_, i) => !isCompactTable || [0, 4, 5, 6].includes(i)
   );
+
+  if (dropTableOrder.length === 0) {
+    return (
+      <Text>
+        No items that drop in this Joint Operation are shown in your app. Enable
+        them in the settings, or switch to a different Joint Operation to start
+        tracking again.
+      </Text>
+    );
+  }
 
   return (
     <Table>
@@ -204,11 +216,9 @@ export const OutputTable: FC = () => {
         </thead>
         <tbody>
           <AnimatePresence>
-            {dropTableOrder
-              .filter(t => !isNoChance(selectedStage, t))
-              .map(t => (
-                <TableRow key={t} item={t} />
-              ))}
+            {dropTableOrder.map(t => (
+              <TableRow key={t} item={t} />
+            ))}
           </AnimatePresence>
         </tbody>
       </LayoutGroup>

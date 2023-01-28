@@ -64,7 +64,7 @@ export const ActionsRow: FC = () => {
           transitionDuration={120}
           maxDropdownHeight={Math.max(Math.min(height - 100, 280), 100)}
           sx={{
-            width: isCompactMenu ? 100 : 230,
+            width: isCompactMenu ? 100 : 210,
             transition: 'width .3s ease-in-out',
           }}
         />
