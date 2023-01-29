@@ -96,6 +96,20 @@ export const HelpModal: FC<{ opened: boolean; close: () => void }> = ({
             drop, we will also adjust the pity range accordingly.
           </Text>
         </Box>
+
+        <Box>
+          <Text weight='bold'>
+            Can an item drop before I reach the pity range?
+          </Text>
+          <Text size='sm'>
+            Yes! If there is an item drop before the pity range, it is an
+            off-pity drop. Pity and Off-pity drops are two seperate things and
+            while pity drops can (& will) only happen in the specified range,
+            off-pity drops are calculated with every chest. <br />
+            This is also the reason, why you can see two drops of the same item
+            in one chest, but never three or more.
+          </Text>
+        </Box>
       </Stack>
     </Modal>
   );
